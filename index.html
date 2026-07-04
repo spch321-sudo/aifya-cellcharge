@@ -3094,6 +3094,7 @@ function renderChat(){
           var _body=_col?('<div class="xz-collapsed-preview">'+esc(String(m.text||"").replace(/\s+/g," ").slice(0,28))+'\u2026</div>'):xzFmt(m.text);
           msgsHtml+='<div class="xz-msg xz-ai"><div class="xz-bubble">'+_body
             +'<div class="xz-acts">'
+            +'<button class="xz-act" id="xzspk-'+mi+'" onclick="xzSpeak('+mi+')">'+((window.xzTTS&&window.xzTTS.active&&window.xzTTS.curId===("msg"+mi))?'⏹ 停止':'🔊 朗讀')+'</button>'
             +'<button class="xz-act" onclick="xzToggleCollapse('+mi+')">'+(_col?'\u25b8 \u5c55\u958b':'\u25be \u6536\u5408')+'</button>'
             +'<button class="xz-act'+(_isfav?' on':'')+'" onclick="xzFav('+mi+')">'+(_isfav?'\u2605 \u5df2\u6536\u85cf':'\u2606 \u6536\u85cf')+'</button>'
             +'<button class="xz-act" onclick="xzDelMsg('+mi+')">\ud83d\uddd1 \u522a\u9664</button>'
@@ -3181,10 +3182,48 @@ window.xzTopic=function(ci){chat.topic=(chat.topic===ci?-1:ci);renderChat();var 
 window.xzTopicAsk=function(ci,qi){if(chat.busy)return;var t=(XZ_TOPICS[ci]&&XZ_TOPICS[ci].qs[qi]);if(!t)return;chat.topic=-1;chat.favView=false;chat.msgs.push({role:"user",text:t});renderChat();xzScrollBottom();xzCall();};
 window.xzFav=function(mi){ var m=chat.msgs[mi]; if(!m)return; var q=(mi>0&&chat.msgs[mi-1]&&chat.msgs[mi-1].role==="user")?chat.msgs[mi-1].text:""; var a=m.text||""; if(!XZ.favs)XZ.favs=[]; var sig=xzFavSig(q,a),idx=-1; for(var k=0;k<XZ.favs.length;k++){ if(xzFavSig(XZ.favs[k].q,XZ.favs[k].a)===sig){idx=k;break;} } if(idx>=0){ XZ.favs.splice(idx,1); xzToast("\u5df2\u79fb\u9664\u6536\u85cf"); } else { XZ.favs.unshift({q:q,a:a,t:Date.now()}); xzToast("\u2b50 \u5df2\u6536\u85cf"); } xzPersist(); renderChat(); };
 window.xzFavRemove=function(idx){ if(!XZ.favs)return; if(!window.confirm("\u5f9e\u6536\u85cf\u79fb\u9664\u9019\u5247\u554f\u7b54\uff1f"))return; XZ.favs.splice(idx,1); xzPersist(); renderChat(); };
+window.xzSpeak=function(mi){ var m=chat.msgs[mi]; if(!m||!m.text)return; if(window.xzTTS&&window.xzTTS.toggle){ window.xzTTS.toggle(m.text,"msg"+mi); } };
 window.xzToggleFavs=function(){ chat.favView=!chat.favView; renderChat(); var m=document.getElementById("xz-msgs"); if(m)m.scrollTop=0; };
 window.xzClearAll=function(){ if(chat.msgs.length && !window.confirm("\u8981\u6e05\u7a7a\u76ee\u524d\u6240\u6709\u554f\u7b54\u3001\u91cd\u65b0\u958b\u59cb\u55ce\uff1f\uff08\u5df2\u6536\u85cf\u7684\u4e0d\u53d7\u5f71\u97ff\uff09"))return; chat.msgs=[]; chat.topic=-1; chat.favView=false; renderChat(); };
 
 renderChat();
+})();
+</script>
+
+<script>
+/* ===== 小智 · 雲哲朗讀引擎（Azure via 既有 Worker，失敗自動退回裝置內建語音） ===== */
+(function(){
+'use strict';
+var EP="https://azure-tts.spch321.workers.dev";
+var VOICE="zh-TW-YunJheNeural";
+var SIL=140,SILC=140,SILE=260;
+var SILENT="data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+var tts={audio:null,unlocked:false,cache:{},active:false,curId:"",token:0,mode:""};
+window.xzTTS=tts;
+function getAudio(){ if(!tts.audio){ tts.audio=new Audio(); tts.audio.preload="auto"; try{tts.audio.playsInline=true;tts.audio.setAttribute("playsinline","");tts.audio.setAttribute("webkit-playsinline","");}catch(_){}} return tts.audio; }
+function unlock(){ if(tts.unlocked)return; try{ var a=getAudio(); a.src=SILENT; var p=a.play(); if(p&&p.then){p.then(function(){tts.unlocked=true;}).catch(function(){});}else{tts.unlocked=true;} }catch(_){}}
+function sanitize(s){ s=String(s==null?"":s); s=s.replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g,"").replace(/[\u2600-\u27BF\u2190-\u21FF\u2B00-\u2BFF\uFE0F]/g,""); s=s.replace(/[*_#`>~]/g,""); return s.replace(/[ \t]+/g," ").trim(); }
+function chunks(text){ var t=sanitize(text); if(!t)return[]; var enders="。！？；\n"; var out=[],buf="",i; for(i=0;i<t.length;i++){ buf+=t.charAt(i); if(enders.indexOf(t.charAt(i))>=0 && buf.length>=60){ out.push(buf); buf=""; } } if(buf.replace(/\s/g,""))out.push(buf); var fin=[]; for(i=0;i<out.length;i++){ var x=out[i]; while(x.length>280){ fin.push(x.slice(0,280)); x=x.slice(280); } if(x)fin.push(x); } return fin.length?fin:[t]; }
+function fetchPiece(piece){ var key=VOICE+"|"+piece; if(tts.cache[key])return Promise.resolve(tts.cache[key]);
+  return fetch(EP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({voice:VOICE,rate:"+0%",sil:SIL,silc:SILC,sile:SILE,text:piece})})
+  .then(function(r){ if(!r.ok)throw new Error("TTS "+r.status); return r.blob(); })
+  .then(function(b){ var url=URL.createObjectURL(b); tts.cache[key]=url; return url; }); }
+function syncBtns(){ try{ var els=document.querySelectorAll('[id^="xzspk-"]'); for(var i=0;i<els.length;i++){ var id=els[i].id.replace("xzspk-",""); els[i].innerHTML=(tts.active&&tts.curId===("msg"+id))?'⏹ 停止':'🔊 朗讀'; } }catch(_){}}
+function stop(){ tts.token++; tts.active=false; tts.curId=""; tts.mode=""; try{ if(tts.audio){tts.audio.pause();tts.audio.onended=null;tts.audio.onerror=null;} }catch(_){} try{ if(window.speechSynthesis)window.speechSynthesis.cancel(); }catch(_){} syncBtns(); }
+function pickVoice(){ try{ var vs=(window.speechSynthesis&&window.speechSynthesis.getVoices())||[]; var byName=null,tw=null,zh=null; for(var k=0;k<vs.length;k++){ var v=vs[k],n=v.name||"",l=v.lang||""; if(/YunJhe|Yun-?Jhe|雲哲/i.test(n))byName=v; if(!tw&&/zh[-_]?TW/i.test(l))tw=v; if(!zh&&/^zh/i.test(l))zh=v; } return byName||tw||zh||null; }catch(_){return null;} }
+function runNative(text,id){ if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance==="undefined"){ stop(); return; }
+  var my=++tts.token; tts.active=true; tts.curId=id; tts.mode="native"; syncBtns();
+  var q=chunks(text),i=0,voice=pickVoice(); try{window.speechSynthesis.cancel();}catch(_){}
+  function step(){ if(my!==tts.token)return; if(i>=q.length){stop();return;} var u=new SpeechSynthesisUtterance(q[i++]); u.lang=(voice&&voice.lang)||"zh-TW"; if(voice)u.voice=voice; u.rate=1.0; u.pitch=1.0; u.onend=function(){if(my===tts.token)step();}; u.onerror=function(){if(my===tts.token)step();}; try{window.speechSynthesis.speak(u);}catch(_){stop();} }
+  step(); }
+function runYun(text,id){ var my=++tts.token; tts.active=true; tts.curId=id; tts.mode="yun"; syncBtns();
+  var q=chunks(text),i=0;
+  function step(){ if(my!==tts.token)return; if(i>=q.length){stop();return;} var first=(i===0),piece=q[i++];
+    fetchPiece(piece).then(function(url){ if(my!==tts.token)return; if(i<q.length)fetchPiece(q[i]).catch(function(){}); var a=getAudio(); a.onended=null;a.onerror=null; a.src=url; a.onended=function(){if(my===tts.token)step();}; a.onerror=function(){if(my===tts.token)step();}; var p=a.play(); if(p&&p.catch)p.catch(function(){ if(my===tts.token)step(); }); })
+    .catch(function(){ if(my!==tts.token)return; if(first){ tts.active=false; if(window.toast){try{window.toast("雲哲暫時連不上，改用裝置內建聲音");}catch(_){}} runNative(text,id); } else { step(); } }); }
+  step(); }
+tts.toggle=function(text,id){ if(tts.active&&tts.curId===id){ stop(); return; } stop(); unlock(); runYun(text,id); };
+tts.stop=stop; tts.sync=syncBtns;
 })();
 </script>
 </body>
