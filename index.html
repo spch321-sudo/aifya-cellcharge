@@ -36,6 +36,35 @@ html[data-theme="dark"]{
 html[data-fs="std"]{ font-size:16px; }
 html[data-fs="large"]{ font-size:18.5px; }
 html[data-fs="xl"]{ font-size:21px; }
+/* 小智聊天文字隨字級放大（大／特大），照顧長輩經銷商 */
+html[data-fs="large"] .xz-bubble{font-size:18.5px;}
+html[data-fs="large"] .xz-quick{font-size:16.2px;}
+html[data-fs="large"] .xz-cat{font-size:15.6px;}
+html[data-fs="large"] .xz-cat-label{font-size:13.5px;}
+html[data-fs="large"] .xz-input{font-size:18.5px;}
+html[data-fs="large"] .xz-collapsed-preview{font-size:16.2px;}
+html[data-fs="large"] .xz-act{font-size:13.5px;}
+html[data-fs="large"] .xz-note{font-size:13.3px;}
+html[data-fs="large"] .xz-name{font-size:20.5px;}
+html[data-fs="large"] .xz-fav-a{font-size:16.2px;}
+html[data-fs="large"] .xz-fav-q{font-size:16.8px;}
+html[data-fs="large"] .xz-favs-title{font-size:17.3px;}
+html[data-fs="large"] .xz-favs-empty{font-size:15.6px;}
+html[data-fs="large"] .xz-send{font-size:17.3px;}
+html[data-fs="xl"] .xz-bubble{font-size:21px;}
+html[data-fs="xl"] .xz-quick{font-size:18.4px;}
+html[data-fs="xl"] .xz-cat{font-size:17.7px;}
+html[data-fs="xl"] .xz-cat-label{font-size:15px;}
+html[data-fs="xl"] .xz-input{font-size:21px;}
+html[data-fs="xl"] .xz-collapsed-preview{font-size:18.4px;}
+html[data-fs="xl"] .xz-act{font-size:15px;}
+html[data-fs="xl"] .xz-note{font-size:15px;}
+html[data-fs="xl"] .xz-name{font-size:23.5px;}
+html[data-fs="xl"] .xz-fav-a{font-size:18.4px;}
+html[data-fs="xl"] .xz-fav-q{font-size:19px;}
+html[data-fs="xl"] .xz-favs-title{font-size:19.7px;}
+html[data-fs="xl"] .xz-favs-empty{font-size:17.7px;}
+html[data-fs="xl"] .xz-send{font-size:19.7px;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{margin:0;background:var(--bg);color:var(--text);
   font-family:-apple-system,"PingFang TC","Microsoft JhengHei","Noto Sans CJK TC",sans-serif;
@@ -2050,7 +2079,7 @@ function renderSet(){
   var r2=el('div','set-row');
   r2.innerHTML='<div><div class="l">字體大小</div></div>';
   var seg=el('div','seg-ctrl');
-  [['std','標準'],['large','大'],['xl','超大']].forEach(function(o){
+  [['std','標準'],['large','大'],['xl','特大']].forEach(function(o){
     var b=el('button',S.settings.fs===o[0]?'on':'',o[1]);
     b.addEventListener('click',function(){S.settings.fs=o[0];save();applySettings();renderSet();});
     seg.appendChild(b);});
