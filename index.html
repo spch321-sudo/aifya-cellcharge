@@ -3231,7 +3231,7 @@ var tts={audio:null,unlocked:false,cache:{},active:false,curId:"",token:0,mode:"
 window.xzTTS=tts;
 function getAudio(){ if(!tts.audio){ tts.audio=new Audio(); tts.audio.preload="auto"; try{tts.audio.playsInline=true;tts.audio.setAttribute("playsinline","");tts.audio.setAttribute("webkit-playsinline","");}catch(_){}} return tts.audio; }
 function unlock(){ if(tts.unlocked)return; try{ var a=getAudio(); a.src=SILENT; var p=a.play(); if(p&&p.then){p.then(function(){tts.unlocked=true;}).catch(function(){});}else{tts.unlocked=true;} }catch(_){}}
-function sanitize(s){ s=String(s==null?"":s); s=s.replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g,"").replace(/[\u2600-\u27BF\u2190-\u21FF\u2B00-\u2BFF\uFE0F]/g,""); s=s.replace(/[*_#`>~]/g,""); return s.replace(/[ \t]+/g," ").trim(); }
+function sanitize(s){ s=String(s==null?"":s); s=s.replace(/811/g,"巴妖妖"); s=s.replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g,"").replace(/[\u2600-\u27BF\u2190-\u21FF\u2B00-\u2BFF\uFE0F]/g,""); s=s.replace(/[*_#`>~]/g,""); return s.replace(/[ \t]+/g," ").trim(); }
 function chunks(text){ var t=sanitize(text); if(!t)return[]; var enders="。！？；\n"; var out=[],buf="",i; for(i=0;i<t.length;i++){ buf+=t.charAt(i); if(enders.indexOf(t.charAt(i))>=0 && buf.length>=60){ out.push(buf); buf=""; } } if(buf.replace(/\s/g,""))out.push(buf); var fin=[]; for(i=0;i<out.length;i++){ var x=out[i]; while(x.length>280){ fin.push(x.slice(0,280)); x=x.slice(280); } if(x)fin.push(x); } return fin.length?fin:[t]; }
 function fetchPiece(piece){ var key=VOICE+"|"+piece; if(tts.cache[key])return Promise.resolve(tts.cache[key]);
   return fetch(EP,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({voice:VOICE,rate:"+0%",sil:SIL,silc:SILC,sile:SILE,text:piece})})
