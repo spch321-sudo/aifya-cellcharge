@@ -83,7 +83,8 @@ h2.title{font-size:1.15rem;font-weight:800;color:var(--brand-d);margin:1.1rem 2p
 .hero{text-align:center;}
 .hero .date{color:var(--muted);font-size:.86rem;}
 .ring-wrap{position:relative;width:148px;height:148px;margin:.4rem auto .2rem;}
-.ring-wrap svg{transform:rotate(-90deg);}
+.ring-wrap>svg{transform:rotate(-90deg);}
+.ring-wrap .mid svg{transform:none;}
 .ring-wrap .mid{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;}
 .ring-wrap .pct{font-size:2rem;font-weight:800;color:var(--brand-d);line-height:1;}
@@ -484,6 +485,7 @@ html[data-theme="dark"] .food.pearl.on .mk,html[data-theme="dark"] .food.pearl .
 .xz-fab:active{transform:scale(.96);}
 .xz-fab-ic{font-size:19px;line-height:1;}
 .xz-fab-tx{font-size:14.5px;font-weight:800;letter-spacing:1px;}
+.xzi{font-family:'Snell Roundhand','Savoye LET','Apple Chancery',cursive;font-style:italic;font-weight:700;font-size:1.15em;padding:0 1px;}
 .xz-overlay{position:fixed;inset:0;z-index:100;background:rgba(30,10,12,.45);display:flex;align-items:flex-end;justify-content:center;}
 .xz-sheet{width:100%;max-width:560px;height:88vh;background:var(--bg);border-radius:22px 22px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 40px rgba(0,0,0,.28);}
 .xz-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:linear-gradient(135deg,var(--brand-d),var(--brand));color:#fff;flex-shrink:0;}
@@ -585,6 +587,7 @@ var KEY='newstart_v17';
 function load(){ try{var v=localStorage.getItem(KEY); return v?JSON.parse(v):null;}catch(e){return null;} }
 function save(){ try{localStorage.setItem(KEY, JSON.stringify(S));}catch(e){} }
 function genId(){ var s='';for(var i=0;i<8;i++)s+='0123456789ABCDEF'[Math.floor(Math.random()*16)]; return s; }
+var XI_SVG='<svg viewBox="7.9 1.9 9.4 18.91" style="height:1.1em;width:.56em;vertical-align:-.2em;margin:0 .04em" aria-hidden="true"><circle cx="13.2" cy="4.7" r="1.95" fill="currentColor"/><path d="M12.63,8.56 12.27,9.54 11.91,10.38 11.53,11.14 11.15,11.85 10.77,12.53 10.39,13.18 10.03,13.84 9.7,14.52 9.43,15.24 9.23,16.01 9.15,16.83 9.18,17.6 9.24,17.83 9.41,18.45 9.76,19.11 10.26,19.65 10.89,20.02 11.57,20.2 12.27,20.21 12.98,20.09 13.7,19.85 14.43,19.48 15.17,19.01 15.92,18.42 16.66,17.73 15.74,16.67 15.0,17.26 14.32,17.7 13.68,18.02 13.11,18.23 12.62,18.33 12.23,18.34 11.94,18.27 11.77,18.18 11.68,18.07 11.62,17.95 11.59,17.77 11.56,17.37 11.62,17.6 11.66,17.03 11.77,16.6 11.94,16.18 12.18,15.75 12.48,15.27 12.86,14.74 13.29,14.15 13.77,13.48 14.27,12.72 14.79,11.86 15.3,10.89 15.77,9.84Z" fill="currentColor"/><path d="M12.2,10.4 C10.6,10.9 9.3,11.9 8.2,13.2 C9.4,12.85 10.7,12.7 11.6,12.6 Z" fill="currentColor"/></svg>';
 var S = load() || { v:1, deviceId:genId(), settings:{theme:'light',fs:'large'}, days:{}, rainbow:{}, superWeek:{} };
 if(!S.settings) S.settings={theme:'light',fs:'large'};
 if(!S.deviceId) S.deviceId=genId();
@@ -756,8 +759,11 @@ function renderHome(){
       '<circle cx="74" cy="74" r="'+R+'" fill="none" stroke="var(--brand)" stroke-width="12" stroke-linecap="round" '+
       'stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"/></svg>'+
       '<div class="mid"><div class="pct">'+pct+'%</div>'+
-      '<div class="pl"><span style="color:#43a047">⚡</span> 今日細胞能量</div>'+
-      (pct>=100?'<div style="font-size:.82rem;color:#F26430;font-weight:800;margin-top:4px">⚡ 滿電達標！</div>':'')+
+      '<div class="pl">今日細胞能量</div>'+
+      '<svg width="48" height="48" viewBox="0 0 24 24" style="margin-top:1px" aria-hidden="true">'+
+        '<path d="M14 2 L5 13 L10 13 L9 21 L18 9 L13 9 Z" fill="#43a047"/>'+
+      '</svg>'+
+      (pct>=100?'<div style="font-size:.82rem;color:#F26430;font-weight:800;margin-top:2px">⚡ 滿電達標！</div>':'')+
       '</div></div>';
   var vs=VERSES[(Math.floor((Date.now()/86400000)))%VERSES.length];
   hero.appendChild(el('div','verse','「'+vs[0]+'」<br>— '+vs[1]));
@@ -1735,6 +1741,11 @@ function renderMeasure(){
   window._bldRecord=function(idx){var m=BLOOD[idx];var v=parseFloat(document.getElementById('bld-'+m.key).value);if(!(v>0&&v<9999)){toast('請輸入有效數值');return;}if(!S.measure.bld)S.measure.bld={};if(!S.measure.bld[m.key])S.measure.bld[m.key]=[];S.measure.bld[m.key].push({t:Date.now(),v:v});save();renderMeasure();toast(m.title+' 已記錄 ✓');};
   window._bldDel=function(idx,t){var m=BLOOD[idx];if(!S.measure.bld||!S.measure.bld[m.key])return;S.measure.bld[m.key]=S.measure.bld[m.key].filter(function(r){return r.t!==t;});save();renderMeasure();};
 
+  /* 血液常規檢測參考資料（附件） */
+  var refBtn=el('div'); refBtn.style.cssText='margin:.6rem 0';
+  refBtn.innerHTML='<button onclick="window.openBloodReference()" style="width:100%;padding:13px;border-radius:14px;background:linear-gradient(135deg,#00695c,#00897b);border:none;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,105,92,.3)">📋 血液常規檢測參考資料</button>';
+  view.appendChild(refBtn);
+
   /* 28天控重紀錄表（底部插入一次） */
   var recLink=el('div');
   recLink.style.cssText='margin:1rem 0 .4rem';
@@ -2222,6 +2233,67 @@ function openStressInfo(){
   openInfoSheet('🧠 情緒與壓力如何影響身體',h,'#E64A19');
 }
 window.openStressInfo=openStressInfo;
+
+/* ===================== 附件：血液常規檢測參考資料 ===================== */
+function openBloodReference(){
+  function card(code,name,ref,ups,downs){
+    var h='<div style="background:var(--surface2);border-radius:12px;padding:11px 13px;margin-bottom:9px">'
+      +'<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-weight:800;color:#00695c;font-size:.9rem">'+code+'</span><span style="font-weight:800;color:var(--text)">'+name+'</span></div>'
+      +'<div style="font-size:.85rem;color:var(--text2);margin-top:3px">參考值：'+ref+'</div>';
+    if(ups)   h+='<div style="font-size:.85rem;color:#e53935;margin-top:4px">↑ '+ups+'</div>';
+    if(downs) h+='<div style="font-size:.85rem;color:#1565c0;margin-top:2px">↓ '+downs+'</div>';
+    h+='</div>'; return h;
+  }
+  function chips(rows){ // rows: [[label,color],...]
+    var cols={g:'#43a047',o:'#F9A825',r:'#e53935'};
+    var h='<div style="display:flex;gap:6px;margin-top:6px">';
+    rows.forEach(function(r){ h+='<div style="flex:1;background:'+cols[r[1]]+';color:#fff;border-radius:8px;padding:6px 4px;text-align:center;font-size:.78rem;font-weight:700;line-height:1.35">'+r[0]+'</div>'; });
+    h+='</div>'; return h;
+  }
+  function lipid(code,name,desc,rows){
+    return '<div style="background:var(--surface2);border-radius:12px;padding:11px 13px;margin-bottom:9px">'
+      +'<div style="display:flex;align-items:baseline;gap:8px"><span style="font-weight:800;color:#E65100;font-size:.9rem">'+code+'</span><span style="font-weight:800;color:var(--text)">'+name+'</span></div>'
+      +'<div style="font-size:.82rem;color:var(--text2);margin-top:2px">'+desc+'</div>'+chips(rows)+'</div>';
+  }
+  var h='';
+  h+='<div style="font-weight:900;color:#00695c;font-size:1rem;margin:2px 0 8px;padding-left:8px;border-left:4px solid #00695c">01　血液常規檢查</div>';
+  h+=card('WBC','白血球','男 3.9–10.6 / 女 3.5–11.0（千/μL）','感染、發炎、藥物副作用','輻射、造血功能異常');
+  h+=card('RBC','紅血球','男 4.5–5.9 / 女 4.0–5.2（百萬/μL）','缺氧、心肺疾病、腎臟病','貧血');
+  h+=card('Hb','血色素','男 13.5–17.5 / 女 12.0–16.0（g/dL）','同紅血球升高','貧血（需配合 MCV 判斷類型）');
+  h+=card('PLT','血小板','150–400（千/μL）','感染、急性出血、手術後','自體免疫、敗血症');
+  h+=card('MCV','平均血球容積','正常 80–100 fL','缺乏 B12/葉酸、酒精性','缺鐵性貧血、地中海型貧血');
+  h+=card('HCT','血球容積比','男 41–53% / 女 36–46%','脫水、抽菸','貧血、過度補液');
+
+  h+='<div style="font-weight:900;color:#E65100;font-size:1rem;margin:14px 0 8px;padding-left:8px;border-left:4px solid #E65100">02　血脂肪檢查</div>';
+  h+=lipid('CHOL','總膽固醇','偏高易造成動脈硬化，增加心血管疾病風險',[['正常<br>&lt; 200','g'],['注意<br>200–239','o'],['偏高<br>≧ 240','r']]);
+  h+=lipid('T-G','三酸甘油脂','注意低脂低糖飲食、限制飲酒、積極運動',[['正常<br>&lt; 150','g'],['注意<br>150–199','o'],['偏高<br>≧ 200','r']]);
+  h+=lipid('HDL-C','高密度脂蛋白','俗稱「好膽固醇」，數值越高越好',[['正常<br>男≧40/女≧50','g'],['偏低<br>為警示','o'],['—','r']]);
+  h+=lipid('LDL-C','低密度脂蛋白','俗稱「壞膽固醇」，偏高增加動脈硬化風險',[['正常<br>&lt; 100','g'],['注意<br>100–129','o'],['偏高<br>≧ 130','r']]);
+
+  h+='<div style="font-weight:900;color:#00695c;font-size:1rem;margin:14px 0 8px;padding-left:8px;border-left:4px solid #00695c">03　糖尿病相關檢查</div>';
+  h+='<div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:2px">飯前血糖（AC Sugar）</div>';
+  h+=chips([['正常<br>&lt; 100','g'],['前期<br>100–125','o'],['糖尿病<br>≧ 126','r']]);
+  h+='<div style="font-size:.86rem;font-weight:700;color:var(--text);margin:10px 0 2px">醣化血色素（HbA1c）</div>';
+  h+=chips([['正常<br>&lt; 5.7%','g'],['前期<br>5.7–6.4%','o'],['糖尿病<br>≧ 6.5%','r']]);
+  h+='<div style="font-size:.8rem;color:var(--text2);margin-top:6px;font-style:italic">HbA1c 反映過去 2–3 個月的平均血糖控制狀況，是追蹤糖尿病的重要指標。</div>';
+
+  h+='<div style="font-weight:900;color:#00897b;font-size:1rem;margin:14px 0 8px;padding-left:8px;border-left:4px solid #00897b">04　肝功能檢查</div>';
+  h+=card('GOT (SGOT)','血清麩胺酸苯醋酸轉氨基酶','正常值 ≦ 34 U/L','急慢性肝炎、肝硬化、心肌梗塞、肝癌','');
+  h+=card('GPT (SGPT)','血清麩胺酸丙酮酸轉氨基酶','正常值 ≦ 36 U/L','急慢性肝炎、脂肪肝、肝壞死、肝癌','');
+  h+=card('r-GT','γ-麩胺醯轉移酶','男 10–71 / 女 6–42 U/L','酒精性肝炎、膽道疾病、胰臟炎','');
+  h+=card('ALK-P','鹼性磷酸酶','正常範圍','膽道疾病、閉塞性黃疸、骨病變','');
+  h+=card('ALB','白蛋白','3.5–5.4 g/dL','','肝功能受損、腎病、營養不良');
+  h+=card('AFP','甲型胎兒蛋白','&lt; 9 ng/mL','肝癌、慢性肝炎、肝硬化（需搭配腹部超音波）','');
+
+  h+='<div style="font-weight:900;color:#1a3a4a;font-size:1rem;margin:14px 0 8px;padding-left:8px;border-left:4px solid #1a3a4a">05　腎功能檢查</div>';
+  h+=card('BUN','尿素氮','7–25 mg/dL','蛋白質攝取過量、尿路閉塞、脫水、心臟衰竭','低蛋白飲食、肝功能不全、妊娠');
+  h+=card('Creatinine','肌酸酐','男 0.64–1.27 / 女 0.44–1.03 mg/dL','急慢性腎功能障礙、嚴重肌肉疾病','肌肉量少（老年人、長期臥床）');
+  h+=card('Uric Acid','尿酸','&lt; 7.0 mg/dL','攝取過多高普林食物、痛風發作','通常不具臨床意義');
+
+  h+='<div style="margin-top:14px;padding:10px 12px;background:rgba(0,105,92,0.08);border-radius:12px;font-size:.82rem;color:var(--text2);line-height:1.7">📌 以上數值僅供參考，各檢驗單位標準略有差異；實際判讀請以您的檢驗報告與醫師建議為準。</div>';
+  openInfoSheet('🩸 血液常規檢測參考資料',h,'#00695c');
+}
+window.openBloodReference=openBloodReference;
 function _clearToday(){ var k=todayKey();
   delete S.days[k]; if(S.rainbow)delete S.rainbow[k]; if(S.rainbowFoods)delete S.rainbowFoods[k]; if(S.mood)delete S.mood[k];
   if(S.bedThanks)delete S.bedThanks[k]; if(S.bedMood)delete S.bedMood[k]; if(S.bedPray)delete S.bedPray[k]; if(S.temp&&S.temp.log)delete S.temp.log[k];
@@ -2438,9 +2510,17 @@ function renderSet(){
     '細胞快充三步驟：淨化→消炎→活化，讓60兆細胞重新甦醒，活出豐盛滿電生命。</div>'+
     '<div class="verse" style="margin-top:0">「親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。」（約翰三書 1:2）</div>';
   view.appendChild(ab);
-}
 
-/* ===================== 導覽 ===================== */
+  // 附件：血液常規檢測參考資料
+  var apx=el('div','card');
+  apx.innerHTML='<h2 class="title" style="margin-top:0">📋 附件</h2>'+
+    '<div class="lead">常見健檢血液指標與參考範圍，方便對照您的檢驗報告。</div>';
+  var apxBtn=el('button','','🩸 血液常規檢測參考資料');
+  apxBtn.style.cssText='width:100%;padding:13px;border-radius:14px;background:linear-gradient(135deg,#00695c,#00897b);border:none;color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,105,92,.3)';
+  apxBtn.addEventListener('click',function(){ openBloodReference(); });
+  apx.appendChild(apxBtn);
+  view.appendChild(apx);
+}
 var TABS={home:renderHome,food:renderFood,measure:renderMeasure,fast:renderFasting,stats:renderStats,calendar:renderCalendar,set:renderSet};
 function go(tab){
   window.__tab=tab;
@@ -3250,7 +3330,7 @@ function xzPersist(){try{localStorage.setItem(XZ_SKEY,JSON.stringify(XZ));}catch
 var XZ=xzLoad(); if(!XZ.favs)XZ.favs=[]; if(!XZ.pos)XZ.pos=null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function xzFmt(s){return esc(s).split("\n").join("<br>");}
+function xzFmt(s){return esc(s).split("\n").join("<br>").split("\u5c0fi").join('\u5c0f'+XI_SVG+'');}
 function xzScrollBottom(){var m=document.getElementById("xz-msgs");if(m)m.scrollTop=m.scrollHeight;}
 function xzToast(t){ if(typeof window.toast==='function'){try{window.toast(t);}catch(e){}} }
 function xzStarters(){return ["我常覺得疲累、沒精神，怎麼幫細胞充電？","想開始 811 快樂吃（在 8 或 11 小時內吃），該怎麼入門？","最近睡不好，有什麼簡單的方法改善？"];}
@@ -3298,13 +3378,13 @@ function renderChat(){
   var host=document.getElementById("xiaozhi");
   if(!host) return;
   var fabStyle = XZ.pos ? ('left:'+XZ.pos.x+'px;top:'+XZ.pos.y+'px;right:auto;bottom:auto') : '';
-  var html='<button class="xz-fab" style="'+fabStyle+'" onclick="if(!window.__xzJustDragged)xzOpen()"><span class="xz-fab-ic">\ud83d\udcac</span><span class="xz-fab-tx">\u5c0f<i style="font-family:Georgia,\'Times New Roman\',serif;font-style:italic;font-weight:800">i</i></span></button>';
+  var html='<button class="xz-fab" style="'+fabStyle+'" onclick="if(!window.__xzJustDragged)xzOpen()"><span class="xz-fab-ic">\ud83d\udcac</span><span class="xz-fab-tx">\u5c0f'+XI_SVG+'</span></button>';
   if(chat.open){
-    var intro="\u60a8\u597d\uff0c\u6211\u662f\u5c0f\u667a \u26a1 \u611b\u83f2\u4e9e\u7d30\u80de\u5feb\u5145\u7ad9\u7684 AI \u5065\u5eb7\u6559\u7df4\u3002\u95dc\u65bc\u7d30\u80de\u5feb\u5145\u3001811\u5feb\u6a02\u5403\u3001\u7a7a\u8179\u65b7\u98df\u3001\u7761\u7720\u904b\u52d5\u3001\u9ad4\u91cd\u8207\u8eab\u5fc3\u5065\u5eb7\uff0c\u90fd\u53ef\u4ee5\u554f\u6211\uff0c\u6211\u9663\u4f60\u4e00\u6b65\u6b65\u627e\u56de\u6eff\u96fb\u7684\u6d3b\u529b\u3002";
+    var intro="\u60a8\u597d\uff0c\u6211\u662f\u5c0fi \u26a1 \u611b\u83f2\u4e9e\u7d30\u80de\u5feb\u5145\u7ad9\u7684 AI \u5065\u5eb7\u6559\u7df4\u3002\u95dc\u65bc\u7d30\u80de\u5feb\u5145\u3001811\u5feb\u6a02\u5403\u3001\u7a7a\u8179\u65b7\u98df\u3001\u7761\u7720\u904b\u52d5\u3001\u9ad4\u91cd\u8207\u8eab\u5fc3\u5065\u5eb7\uff0c\u90fd\u53ef\u4ee5\u554f\u6211\uff0c\u6211\u9663\u4f60\u4e00\u6b65\u6b65\u627e\u56de\u6eff\u96fb\u7684\u6d3b\u529b\u3002";
     var msgsHtml='';
     if(chat.favView){ msgsHtml=xzFavsHTML(); }
     else{
-      msgsHtml='<div class="xz-msg xz-ai"><div class="xz-bubble">'+esc(intro)+'</div></div>';
+      msgsHtml='<div class="xz-msg xz-ai"><div class="xz-bubble">'+xzFmt(intro)+'</div></div>';
       chat.msgs.forEach(function(m,mi){
         if(m.role==="user"){
           msgsHtml+='<div class="xz-msg xz-me"><div class="xz-bubble">'+xzFmt(m.text)+'</div></div>';
@@ -3341,11 +3421,11 @@ function renderChat(){
     }
     html+='<div class="xz-overlay" onclick="if(event.target===this)xzClose()">'
       +'<div class="xz-sheet">'
-        +'<div class="xz-head"><div class="xz-head-l"><span class="xz-ava">\u26a1</span><div><div class="xz-name">\u5c0f<i style="font-family:Georgia,\'Times New Roman\',serif;font-style:italic">i</i></div><div class="xz-role">AI \u5065\u5eb7\u6559\u7df4 \u00b7 \u9663\u4f60\u7d30\u80de\u5feb\u5145</div></div></div>'
+        +'<div class="xz-head"><div class="xz-head-l"><span class="xz-ava">\u26a1</span><div><div class="xz-name">\u5c0f'+XI_SVG+'</div><div class="xz-role">AI \u5065\u5eb7\u6559\u7df4 \u00b7 \u9663\u4f60\u7d30\u80de\u5feb\u5145</div></div></div>'
         +'<div class="xz-head-r"><button class="xz-hbtn" onclick="xzOpenLine()" aria-label="\u5b98\u65b9LINE" style="background:#06C755;color:#fff">LINE</button><button class="xz-hbtn" onclick="xzToggleFavs()" aria-label="\u6536\u85cf">\u2b50</button><button class="xz-hbtn" onclick="xzClearAll()" aria-label="\u91cd\u65b0\u958b\u59cb">\ud83c\udfe0</button><button class="xz-x" onclick="xzClose()">\u2715</button></div></div>'
         +'<div class="xz-msgs" id="xz-msgs">'+msgsHtml+'</div>'
         +'<div class="xz-foot"><input id="xz-input" class="xz-input" type="text" placeholder="\u5411\u5c0fi\u63d0\u554f\u2026" onkeydown="if(event.key===\'Enter\')xzSend()"><button class="xz-send" onclick="xzSend()">\u9001\u51fa</button></div>'
-        +'<div class="xz-note">\u5c0fi\u662f AI \u5065\u5eb7\u6559\u7df4\uff0c\u63d0\u4f9b\u4e00\u822c\u4fdd\u5065\u53c3\u8003\uff0c\u4e0d\u80fd\u53d6\u4ee3\u5c08\u696d\u91ab\u7642\u8a3a\u65b7\u8207\u6cbb\u7642\u3002\u8eab\u9ad4\u4e0d\u9069\u8acb\u8ae2\u8a62\u91ab\u5e2b \ud83d\ude4f</div>'
+        +'<div class="xz-note">\u5c0f'+XI_SVG+'\u662f AI \u5065\u5eb7\u6559\u7df4\uff0c\u63d0\u4f9b\u4e00\u822c\u4fdd\u5065\u53c3\u8003\uff0c\u4e0d\u80fd\u53d6\u4ee3\u5c08\u696d\u91ab\u7642\u8a3a\u65b7\u8207\u6cbb\u7642\u3002\u8eab\u9ad4\u4e0d\u9069\u8acb\u8ae2\u8a62\u91ab\u5e2b \ud83d\ude4f</div>'
       +'</div></div>';
   }
   host.innerHTML=html;
