@@ -82,13 +82,13 @@ h2.title{font-size:1.15rem;font-weight:800;color:var(--brand-d);margin:1.1rem 2p
 /* hero ring */
 .hero{text-align:center;}
 .hero .date{color:var(--muted);font-size:.86rem;}
-.ring-wrap{position:relative;width:148px;height:148px;margin:.4rem auto .2rem;}
+.ring-wrap{position:relative;width:172px;height:172px;margin:.4rem auto .2rem;}
 .ring-wrap>svg{transform:rotate(-90deg);}
 .ring-wrap .mid svg{transform:none;}
 .ring-wrap .mid{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;}
-.ring-wrap .pct{font-size:2rem;font-weight:800;color:var(--brand-d);line-height:1;}
-.ring-wrap .pl{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.ring-wrap .pct{font-size:1.7rem;font-weight:800;color:var(--brand-d);line-height:1;}
+.ring-wrap .pl{font-size:.78rem;color:var(--muted);margin-top:8px;}
 .verse{background:var(--surface2);border-left:4px solid var(--brand-l);border-radius:12px;
   padding:.7rem .85rem;margin-top:.7rem;color:var(--brand-d);font-size:.92rem;font-style:italic;text-align:center;}
 
@@ -616,22 +616,18 @@ var PILLARS=[
  {k:'w', zh:'飲水記錄', en:'Water',      icon:'💧',color:'#1E88E5',type:'count',goal:8,unit:'杯(300cc)',step:1,tip:'充足水分幫助細胞代謝與淨化，晨起空腹先喝一杯'},
  {k:'b', zh:'心靈SPA',  en:'Soul',       icon:'✨',color:'#8e24aa',type:'toggle',tip:'睡前深呼吸、感謝三件事、禱告放下情緒，讓身心復位'}
 ];
-/* 電量貢獻（依愛菲亞建議）：E生愛快充每次 +25%（最多2次＝50%）；
-   動一動、腳踏實地、曬曬陽光、充足睡眠、811快樂吃 各完成 +10%（共50%），封頂100% */
+/* 細胞能量：八個開關依「完成度」給分，八項全部做完才 100%。
+   E生愛快充仍為旗艦（滿2次共20%，每按一次+10%），其餘各項 10~12%；
+   飲水記錄、心靈SPA 也一併計入，沒做完就到不了滿電，任何一項都不會獨佔太多。
+   權重可自行調整（總和需為100）：*/
+var CELL_W={cc:20, e:12, r:12, n:12, w:12, s:12, g:10, b:10};
 function _cellPct(){
- var d=today();
- var cc=Math.min(d['cc']||0,2); // 最多計2次
- var pcc=cc*25;                 // 充一次 25%
- var others=['e','g','s','r','n']; // 五個動作各10%
- var extras=0;
- others.forEach(function(k){
-   var p=null; PILLARS.forEach(function(x){if(x.k===k)p=x;});
-   if(!p)return;
-   var v=d[k]||0;
-   if(p.type==='toggle'){if(v)extras+=10;}
-   else{if(v>=goalOf(p))extras+=10;}
+ var sum=0;
+ PILLARS.forEach(function(p){
+   var w=CELL_W[p.k]||0;
+   sum += w * pillarPct(p);   // pillarPct 依次數／時間／是否完成回傳 0~1 的完成度
  });
- return Math.min(100, pcc + extras);
+ return Math.min(100, Math.round(sum));
 }
 var VERSES=[
  ['親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。','約翰三書 1:2'],
@@ -755,21 +751,21 @@ function renderHome(){
   document.getElementById('secLabel').textContent='⚡ E生愛快充 CHARGE';
   var d=new Date();var wd=['日','一','二','三','四','五','六'][d.getDay()];
   var pct=overallPct();
-  var R=58, C=2*Math.PI*R, off=C*(1-pct/100);
+  var R=70, C=2*Math.PI*R, off=C*(1-pct/100);
   var hero=el('div','card hero');
   hero.innerHTML=
     '<div class="hero-logo"><img src="'+LOGO_FULL+'" alt="AIFYA 細胞快充"></div>'+
     '<div class="date">'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 ‧ 星期'+wd+'</div>'+
-    '<div class="ring-wrap"><svg width="148" height="148">'+
-      '<circle cx="74" cy="74" r="'+R+'" fill="none" stroke="var(--track)" stroke-width="12"/>'+
-      '<circle cx="74" cy="74" r="'+R+'" fill="none" stroke="var(--brand)" stroke-width="12" stroke-linecap="round" '+
+    '<div class="ring-wrap"><svg width="172" height="172">'+
+      '<circle cx="86" cy="86" r="'+R+'" fill="none" stroke="var(--track)" stroke-width="9"/>'+
+      '<circle cx="86" cy="86" r="'+R+'" fill="none" stroke="var(--brand)" stroke-width="9" stroke-linecap="round" '+
       'stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"/></svg>'+
       '<div class="mid"><div class="pct">'+pct+'%</div>'+
       '<div class="pl">今日細胞能量</div>'+
-      '<svg width="48" height="48" viewBox="0 0 24 24" style="margin-top:1px" aria-hidden="true">'+
+      '<svg width="46" height="46" viewBox="0 0 24 24" style="margin-top:-6px" aria-hidden="true">'+
         '<path d="M14 2 L5 13 L10 13 L9 21 L18 9 L13 9 Z" fill="#43a047"/>'+
       '</svg>'+
-      (pct>=100?'<div style="font-size:.82rem;color:#F26430;font-weight:800;margin-top:2px">⚡ 滿電達標！</div>':'')+
+      (pct>=100?'<div style="font-size:.82rem;color:#F26430;font-weight:800;margin-top:-6px">⚡ 滿電達標！</div>':'')+
       '</div></div>';
   var vs=VERSES[(Math.floor((Date.now()/86400000)))%VERSES.length];
   hero.appendChild(el('div','verse','「'+vs[0]+'」<br>— '+vs[1]));
