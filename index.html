@@ -220,6 +220,11 @@ html[data-theme="dark"] .root-btn2{background:rgba(255,255,255,0.06);border-colo
 html[data-theme="dark"] .ss-scl{background:rgba(255,255,255,0.06);}
 html[data-theme="dark"] .ss-btn2{background:rgba(255,255,255,0.06);border-color:var(--border);}
 html[data-theme="dark"] .ss-btn2 .sl{color:var(--text2);}
+/* 夜間模式：被選取的狀態必須蓋過上面的底色規則，否則點了看起來像沒反應 */
+html[data-theme="dark"] .ss-btn2.sel{background:rgba(239,83,80,0.22)!important;border-color:#EF5350!important;}
+html[data-theme="dark"] .ss-btn2.sel .sl{color:#FF8A80!important;}
+html[data-theme="dark"] .root-btn2.sel{background:rgba(123,31,162,0.28)!important;border-color:#CE93D8!important;color:#E1BEE7!important;}
+html[data-theme="dark"] .ew-btn2.sel{border-color:currentColor!important;}
 html[data-theme="dark"] .sw-desc{color:var(--text2);}
 html[data-theme="dark"] .sw-line{background:rgba(255,255,255,0.12);}
 html[data-theme="dark"] #emo-body2 [style*="#fff8e1"],
@@ -616,18 +621,24 @@ var PILLARS=[
  {k:'w', zh:'飲水記錄', en:'Water',      icon:'💧',color:'#1E88E5',type:'count',goal:8,unit:'杯(300cc)',step:1,tip:'充足水分幫助細胞代謝與淨化，晨起空腹先喝一杯'},
  {k:'b', zh:'心靈SPA',  en:'Soul',       icon:'✨',color:'#8e24aa',type:'toggle',tip:'睡前深呼吸、感謝三件事、禱告放下情緒，讓身心復位'}
 ];
-/* 細胞能量：八個開關依「完成度」給分，八項全部做完才 100%。
-   E生愛快充仍為旗艦（滿2次共20%，每按一次+10%），其餘各項 10~12%；
-   飲水記錄、心靈SPA 也一併計入，沒做完就到不了滿電，任何一項都不會獨佔太多。
-   權重可自行調整（總和需為100）：*/
-var CELL_W={cc:20, e:12, r:12, n:12, w:12, s:12, g:10, b:10};
+/* 電量來源計算（公司指定的五開關貢獻度）：
+   ⚡ E生愛快充 每次 +50%（最多計 2 次）
+   🏃 動一動 / 🌿 腳踏實地 / ☀️ 曬曬陽光 / 🌙 充足睡眠 / 🥗 811快樂吃 各達標 +10%
+   封頂 100%（超過快充視為「滿電獎章」） */
 function _cellPct(){
- var sum=0;
- PILLARS.forEach(function(p){
-   var w=CELL_W[p.k]||0;
-   sum += w * pillarPct(p);   // pillarPct 依次數／時間／是否完成回傳 0~1 的完成度
+ var d=today();
+ var cc=Math.min(d['cc']||0,2);   // 最多計 2 次
+ var pcc=cc*50;                   // 每充一次 50%
+ var others=['e','g','s','r','n'];// 五個動作各 10%
+ var extras=0;
+ others.forEach(function(k){
+   var p=null; PILLARS.forEach(function(x){if(x.k===k)p=x;});
+   if(!p)return;
+   var v=d[k]||0;
+   if(p.type==='toggle'){ if(v)extras+=10; }
+   else { if(v>=goalOf(p))extras+=10; }
  });
- return Math.min(100, Math.round(sum));
+ return Math.min(100, pcc + extras);
 }
 var VERSES=[
  ['親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。','約翰三書 1:2'],
@@ -1754,7 +1765,7 @@ function renderMeasure(){
   var shareCard=el('div','card');
   shareCard.innerHTML='<div style="font-size:.92rem;color:var(--text2);line-height:1.7;margin-bottom:10px">'
     +'把這一週的體重、血壓與進階量測整理成一張美圖，一鍵分享到 LINE，見證神保守的健康恩典。</div>';
-  var msBtn=el('button','','📊 產生本週量測美圖');
+  var msBtn=el('button','','📊 產生本週量測紀錄');
   msBtn.style.cssText='width:100%;padding:14px;border-radius:14px;border:none;'
     +'background:linear-gradient(135deg,#06C755,#04A94A);color:#fff;font-weight:800;'
     +'font-size:1.05rem;cursor:pointer;box-shadow:0 4px 14px rgba(6,199,85,.32)';
@@ -2013,7 +2024,7 @@ function renderStats(){
   var shb=el('div','card'); shb.style.cssText='background:linear-gradient(135deg,#D42E3C,#A01E28);border:none;margin-top:.6rem';
   shb.innerHTML='<div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px">\uD83D\uDCF8 \u5206\u4eab\u672c\u9031\u6210\u679c</div>'
     +'<div style="font-size:.9rem;color:rgba(255,255,255,0.92);line-height:1.6;margin-bottom:12px">\u628a\u9019\u9031\u7684\u5145\u96fb\u6210\u679c\u505a\u6210\u7f8e\u5716\uff0c\u4e00\u9375\u5206\u4eab\u5230 LINE\uff0c\u898b\u8b49\u795e\u7684\u6069\u5178\uff01</div>';
-  var shbtn=el('button','','\uD83D\uDDBC\uFE0F \u7522\u751f\u5206\u4eab\u7f8e\u5716'); shbtn.style.cssText='width:100%;box-sizing:border-box;padding:13px;border-radius:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.55);color:#fff;font-weight:800;font-size:1.05rem;cursor:pointer';
+  var shbtn=el('button','','\uD83D\uDDBC\uFE0F \u7522\u751f\u5206\u4eab\u7d00\u9304'); shbtn.style.cssText='width:100%;box-sizing:border-box;padding:13px;border-radius:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.55);color:#fff;font-weight:800;font-size:1.05rem;cursor:pointer';
   shbtn.addEventListener('click',function(){ _shareWeekImage(); });
   shb.appendChild(shbtn); view.appendChild(shb);
   var streak=0; for(var j=0;j<120;j++){var d2=new Date(now);d2.setDate(now.getDate()-j); if(dayPct(S.days[dayKeyOf(d2)])>0)streak++; else break;}
@@ -2914,10 +2925,13 @@ function renderSet(){
       +'<span style="font-weight:800;font-size:1.2rem;color:'+p.color+'" id="gval-'+p.k+'">'+cur+'<span style="font-size:.85rem;color:var(--muted);margin-left:2px">'+p.unit+'</span></span></div>';
     var rng='<input type="range" min="'+cfg.min+'" max="'+cfg.max+'" step="'+(cfg.step||1)+'" value="'+cur+'" id="grng-'+p.k+'" style="width:100%;accent-color:'+p.color+';cursor:pointer">';
     var dpos=Math.max(0,Math.min(100,((p.goal-cfg.min)/(cfg.max-cfg.min))*100));
+    var dclamp=Math.max(12,Math.min(88,dpos)); /* 避免貼齊左右邊界被截掉 */
     var legend='<div style="position:relative;height:16px;margin-top:1px">'
       +'<span style="position:absolute;left:0;font-size:.8rem;color:var(--muted)">'+cfg.min+p.unit+'</span>'
       +'<span style="position:absolute;right:0;font-size:.8rem;color:var(--muted)">'+cfg.max+p.unit+'</span>'
-      +'<span style="position:absolute;left:'+dpos+'%;transform:translateX(-50%);font-size:.78rem;font-weight:700;color:'+p.color+';white-space:nowrap">▎預設 '+p.goal+'</span>'
+      +'</div>'
+      +'<div style="position:relative;height:18px">'
+      +'<span style="position:absolute;left:'+dclamp+'%;transform:translateX(-50%);font-size:.78rem;font-weight:700;color:'+p.color+';white-space:nowrap">▎預設 '+p.goal+'</span>'
       +'</div>';
     var sci='<div style="margin-top:6px;padding:5px 8px;border-left:2px solid '+p.color+'66;font-size:.82rem;color:var(--text2);line-height:1.5">🔬 '+cfg.science+'</div>';
     box.innerHTML=head+rng+legend+sci;
@@ -3220,44 +3234,16 @@ function renderEmoTab(){
   html += '</div>';
   html += '</div>'; /* end card */
 
-  /* ── 步驟二：探索（正向=深化，其他=根源）── */
-  if(S.emo){
-    html += '<div class="emo-card2 step-in" style="border-color:'+(curEmo?curEmo.c+'40':'rgba(0,0,0,0.07)')+';"><div class="emo-sec" style="color:#1976D2;">🔍 第二步 · 深入探索</div>';
-
-    if(isPos(S.emo)){
-      /* 正向情緒：深化問題 */
-      var exp = POS_EXPLORE[S.emo] || {q:'這個感受帶給你什麼？', opts:['讓我感到更親近上帝','提醒我上帝的恩典','給我力量繼續走','讓我想感謝上帝','不確定，只是感覺好']};
-      html += '<div style="font-size:16px;color:#546e7a;margin-bottom:10px;line-height:1.7;">你選擇了「'+(curEmo?curEmo.l:'')+curEmo.e+'」<br><strong>'+exp.q+'</strong></div>';
-      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
-      exp.opts.forEach(function(opt){
-        var sel=S.posOpt===opt;
-        html += '<button onclick="window._spo(this.dataset.spopt)" data-spopt="'+opt.replace(/"/g,"&quot;")+'" style="padding:9px 12px;border-radius:10px;text-align:left;font-size:15px;font-weight:600;border:1.5px solid '+(sel?'#4CAF50':'rgba(0,0,0,0.08)')+';background:'+(sel?'rgba(76,175,80,0.1)':'#fff')+';color:'+(sel?'#2e7d32':'#37474F')+';cursor:pointer;display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">'+(sel?'✅':'○')+'</span>'+opt+'</button>';
-      });
-      html += '</div>';
-      html += '<div style="margin-top:10px;padding:10px 12px;background:rgba(76,175,80,0.07);border-radius:10px;font-size:15px;color:#2e7d32;line-height:1.7;">💡 正向情緒也要辨識！感謝上帝賜這情緒，並問自己如何讓這果子繼續生長滋養別人。</div>';
-    } else {
-      /* 負面/中性：根源探索 */
-      html += '<div style="font-size:16px;color:#546e7a;margin-bottom:10px;">這個「'+(curEmo?curEmo.l:'')+'」的感受，最可能來自哪裡？</div>';
-      html += '<div class="root-grid2">';
-      ROOTS.forEach(function(r){
-        var sel=S.root===r.k;
-        html += '<button class="root-btn2'+(sel?' sel':'')+'" onclick="window._sr(this.dataset.srkey)" data-srkey="'+r.k+'"><span style="font-size:18px;">'+r.ic+'</span><span>'+r.l+'</span></button>';
-      });
-      html += '</div>';
-    }
-    html += '</div>';
-  }
-
-  /* ── 步驟三：記錄心聲 ── */
-  var step3ready = S.emo && (isPos(S.emo) ? S.posOpt : S.root);
+  /* ── 第二步：記錄心聲（選好情緒即可進入，不再經過「深入探索」）── */
+  var step3ready = !!S.emo;
   if(step3ready){
-    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#00796B;">📝 第三步 · 記錄心聲</div>';
+    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#00796B;">📝 第二步 · 記錄心聲</div>';
     html += '<textarea id="emo-note2" rows="3" placeholder="把此刻感受誠實寫下來...上帝看你的心，比你更了解你。" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:15px;outline:none;resize:none;font-family:inherit;line-height:1.8;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'#f8fdf8')+';color:'+(window.__isDark()?'#e8f5e9':'inherit')+';box-sizing:border-box;" onchange="window._en(this.value)">'+S.emoNote+'</textarea>';
     html += '<button onclick="window._saveEmo()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#7B1FA2,#4A148C);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">✅ 儲存今日情緒記錄</button>';
     html += '</div>';
   }
 
-  /* ── 步驟四：情緒轉化逐步引導 ── */
+  /* ── 第三步：情緒轉化逐步引導（選好情緒即可直接進入）── */
   if(S.emo){
     html += renderTxWizard(curEmo);
   }
