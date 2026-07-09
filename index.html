@@ -1749,6 +1749,19 @@ function renderMeasure(){
   view.appendChild(refBtn);
 
   /* 28天控重紀錄表（底部插入一次） */
+  /* --- 本週量測統計美圖分享 --- */
+  view.appendChild(el('h2','title','本週統計 📸'));
+  var shareCard=el('div','card');
+  shareCard.innerHTML='<div style="font-size:.92rem;color:var(--text2);line-height:1.7;margin-bottom:10px">'
+    +'把這一週的體重、血壓與進階量測整理成一張美圖，一鍵分享到 LINE，見證神保守的健康恩典。</div>';
+  var msBtn=el('button','','📊 產生本週量測美圖');
+  msBtn.style.cssText='width:100%;padding:14px;border-radius:14px;border:none;'
+    +'background:linear-gradient(135deg,#06C755,#04A94A);color:#fff;font-weight:800;'
+    +'font-size:1.05rem;cursor:pointer;box-shadow:0 4px 14px rgba(6,199,85,.32)';
+  msBtn.addEventListener('click',function(){ _shareMeasImage(); });
+  shareCard.appendChild(msBtn);
+  view.appendChild(shareCard);
+
   var recLink=el('div');
   recLink.style.cssText='margin:1rem 0 .4rem';
   recLink.innerHTML='<a href="https://forms.gle/WhkEhoHE7GKnaAQDA" target="_blank" style="display:block;padding:.85rem;border-radius:14px;background:linear-gradient(135deg,#A01E28,#D42E3C);color:#fff;font-weight:800;font-size:1rem;text-decoration:none;text-align:center;box-shadow:0 4px 14px rgba(212,46,60,.35)">📊 28天控重紀錄表 →</a>';
@@ -2494,23 +2507,26 @@ function _drawWeekCanvas(st,cb){
   img.onerror=function(){ drawAll(null); };
   try{ img.src=LOGO_WORD; }catch(e){ drawAll(null); }
 }
-function _prepShareFile(canvas,cb){
+function _prepShareFile(canvas,cb,fname){
+  if(!fname)fname='aifya-week.png';
   try{
     if(!canvas.toBlob){ return cb(null); }
     canvas.toBlob(function(blob){
       if(!blob){ return cb(null); }
-      try{ cb(new File([blob],'aifya-week.png',{type:'image/png'})); }
+      try{ cb(new File([blob],fname,{type:'image/png'})); }
       catch(e){ cb(null); }
     },'image/png');
   }catch(e){ cb(null); }
 }
-function _showImageShare(canvas,url,caption,file){
+function _showImageShare(canvas,url,caption,file,title,fname){
+  if(!title)title='📸 本週成果美圖';
+  if(!fname)fname='愛菲亞本週成果.png';
   var ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:4200;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:16px';
   var box=el('div'); box.style.cssText='background:var(--surface);border-radius:20px;max-width:420px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.45)';
-  box.innerHTML='<div style="background:linear-gradient(135deg,#D42E3C,#A01E28);padding:14px 18px;color:#fff;font-weight:900;font-size:1.05rem">📸 本週成果美圖</div>';
+  box.innerHTML='<div style="background:linear-gradient(135deg,#D42E3C,#A01E28);padding:14px 18px;color:#fff;font-weight:900;font-size:1.05rem">'+title+'</div>';
   var scroll=el('div'); scroll.style.cssText='padding:14px;overflow:auto';
-  var img=el('img'); img.src=url; img.alt='本週成果';
+  var img=el('img'); img.src=url; img.alt=title;
   img.style.cssText='width:100%;border-radius:12px;display:block;box-shadow:0 4px 16px rgba(0,0,0,0.15);-webkit-touch-callout:default;touch-callout:default';
   scroll.appendChild(img);
   var callout=el('div');
@@ -2520,23 +2536,77 @@ function _showImageShare(canvas,url,caption,file){
   scroll.appendChild(callout);
   var msg=el('div'); msg.style.cssText='font-size:.84rem;color:var(--text2);margin-top:10px;line-height:1.6;text-align:center';
   scroll.appendChild(msg); box.appendChild(scroll);
-  function setMsg(t,ok){ msg.textContent=t; msg.style.color=ok?'#04A94A':'var(--text2)'; }
+  function setMsg(t,ok){ msg.textContent=t; msg.style.color=ok?'#04A94A':(ok===false?'#c62828':'var(--text2)'); }
+
+  /* 判斷這個環境到底能不能一鍵分享，並說明原因 */
+  function _shareEnv(){
+    var inFrame=false; try{ inFrame=(window.self!==window.top); }catch(e){ inFrame=true; }
+    var secure=(window.isSecureContext===true) ||
+               location.protocol==='https:' ||
+               location.hostname==='localhost';
+    if(!navigator.share){
+      if(!secure) return {ok:false,why:'目前不是 https 安全連線（例如直接開啟本機檔案），瀏覽器不允許一鍵分享。'};
+      if(inFrame)  return {ok:false,why:'目前在預覽視窗（iframe）中，瀏覽器不允許一鍵分享。'};
+      return {ok:false,why:'這個瀏覽器不支援一鍵分享功能。'};
+    }
+    return {ok:true,inFrame:inFrame};
+  }
+
   var btns=el('div'); btns.style.cssText='display:flex;flex-wrap:wrap;gap:10px;padding:0 14px 16px';
-  var shareBtn=el('button','','📤 一鍵分享（部分瀏覽器可用）');
+  var shareBtn=el('button','','📤 一鍵分享到 LINE');
   shareBtn.style.cssText='flex:1 1 100%;box-sizing:border-box;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#06C755,#04A94A);color:#fff;font-weight:800;font-size:1.02rem;cursor:pointer';
+
+  /* 環境不支援時，先讓按鈕誠實地反映狀態，不要讓長輩白按 */
+  var envInit=_shareEnv();
+  if(!envInit.ok){
+    shareBtn.textContent='📤 一鍵分享（此環境無法使用）';
+    shareBtn.style.background='#b0bec5';
+    shareBtn.style.cursor='not-allowed';
+  }
+
   shareBtn.addEventListener('click',function(){
-    var shared=false;
-    try{
-      if(navigator.share && file && (!navigator.canShare || navigator.canShare({files:[file]}))){
-        var p=navigator.share({files:[file],text:caption}); if(p&&p.then)p.then(function(){},function(){}); shared=true;
-      } else if(navigator.share){
-        var q=navigator.share({text:caption}); if(q&&q.then)q.then(function(){},function(){}); shared=true;
-      }
-    }catch(e){ shared=false; }
-    if(shared){ setMsg('若有跳出分享選單就選 LINE；沒有的話，請改用上面「長按圖片」的方式 🙏',true); }
-    else{ setMsg('這個瀏覽器不能一鍵分享，請改用上面「長按圖片」的方式分享 🙏',false); }
+    var env=_shareEnv();
+    if(!env.ok){
+      setMsg(env.why+' 請改用上面「長按圖片 → Share…」的方式分享 🙏', false);
+      return;
+    }
+    /* 有圖就連圖一起分享，不行就退而分享文字 */
+    var payload=null;
+    if(file && (!navigator.canShare || navigator.canShare({files:[file]}))){
+      payload={files:[file], text:caption};
+    }else{
+      payload={text:caption, title:'愛菲亞細胞快充站'};
+    }
+    var p;
+    try{ p=navigator.share(payload); }
+    catch(e){
+      setMsg('無法開啟分享選單（'+(e&&e.name?e.name:'錯誤')+'）。請改用「長按圖片 → Share…」🙏', false);
+      return;
+    }
+    setMsg('分享選單開啟中…請選擇 LINE', null);
+    if(p && p.then){
+      p.then(function(){
+        setMsg('已送出分享 ✓ 願神使用這份見證祝福人 🙏', true);
+      }, function(err){
+        var n=(err&&err.name)||'';
+        if(n==='AbortError'){                 /* 使用者自己取消，不是錯誤 */
+          setMsg('已取消分享。', null);
+        }else if(n==='NotAllowedError'){
+          setMsg('瀏覽器擋下了分享（可能在預覽視窗中）。請改用「長按圖片 → Share…」🙏', false);
+        }else if(n==='DataError' || n==='TypeError'){
+          /* 圖片檔太大或不被接受 → 退回只分享文字 */
+          try{
+            var q=navigator.share({text:caption, title:'愛菲亞細胞快充站'});
+            if(q&&q.then)q.then(function(){ setMsg('已送出文字分享 ✓',true); },
+                                function(){ setMsg('圖片無法直接分享，請「長按圖片 → Share…」🙏',false); });
+          }catch(e2){ setMsg('圖片無法直接分享，請「長按圖片 → Share…」🙏', false); }
+        }else{
+          setMsg('分享未完成（'+(n||'未知原因')+'）。請改用「長按圖片 → Share…」🙏', false);
+        }
+      });
+    }
   });
-  var saveBtn=el('a','','💾 儲存圖片'); saveBtn.href=url; saveBtn.download='愛菲亞本週成果.png'; saveBtn.target='_blank'; saveBtn.rel='noopener';
+  var saveBtn=el('a','','💾 儲存圖片'); saveBtn.href=url; saveBtn.download=fname; saveBtn.target='_blank'; saveBtn.rel='noopener';
   saveBtn.style.cssText='flex:1;box-sizing:border-box;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-weight:700;font-size:1rem;text-align:center;text-decoration:none;cursor:pointer';
   saveBtn.addEventListener('click',function(){ setMsg('若沒有自動存檔，請長按上面圖片選「Save to Photos」到相簿 🙏',true); });
   var lineBtn=el('button','','💬 文字');
@@ -2559,6 +2629,206 @@ function _shareWeekImage(){
       var url=''; try{ url=canvas.toDataURL('image/png'); }catch(e){ url=''; }
       var caption=_weekCaption(st);
       _prepShareFile(canvas,function(file){ _showImageShare(canvas,url,caption,file); });
+    });
+  }catch(e){ toast('產生失敗，請稍後再試'); }
+}
+
+/* ===================== 量測一週統計美圖（分享到 LINE） ===================== */
+function _measWeekStats(){
+  var now=new Date(); var wkAgo=now.getTime()-7*86400000;
+  var M=(S.measure||{});
+  function inWk(a){ return ((a||[]).filter(function(r){return r&&r.t>=wkAgo;})); }
+
+  /* 體重 */
+  var w=inWk(M.w), wStat=null;
+  if(w.length){
+    var kg=w.map(function(r){return r.kg;});
+    var sum=0,i; for(i=0;i<kg.length;i++)sum+=kg[i];
+    wStat={n:w.length, last:kg[kg.length-1], first:kg[0],
+      avg:sum/kg.length, min:Math.min.apply(null,kg), max:Math.max.apply(null,kg),
+      delta:(w.length>=2)?(kg[kg.length-1]-kg[0]):null, list:w};
+  }
+  /* 血壓 */
+  var bp=inWk(M.bp), bStat=null;
+  if(bp.length){
+    var ss=0,dd=0,pp=0,pn=0,j;
+    for(j=0;j<bp.length;j++){ ss+=bp[j].sys; dd+=bp[j].dia; if(bp[j].pulse){pp+=bp[j].pulse;pn++;} }
+    bStat={n:bp.length, sys:Math.round(ss/bp.length), dia:Math.round(dd/bp.length),
+      pulse:pn?Math.round(pp/pn):null, last:bp[bp.length-1]};
+  }
+  /* 進階量測：體脂 / 內臟脂肪 / 腰圍 */
+  var advMeta={bf:{t:'體脂率',u:'%'}, vf:{t:'內臟脂肪',u:'級'}, wc:{t:'腰圍',u:'cm'}};
+  var adv=[], k;
+  for(k in advMeta){ if(!advMeta.hasOwnProperty(k))continue;
+    var rows=inWk((M.adv&&M.adv[k])||[]);
+    if(rows.length){
+      var dl=(rows.length>=2)?(rows[rows.length-1].v-rows[0].v):null;
+      adv.push({key:k, title:advMeta[k].t, unit:advMeta[k].u, last:rows[rows.length-1].v, delta:dl});
+    }
+  }
+  function f(d){return d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate());}
+  var s=new Date(now); s.setDate(now.getDate()-6);
+  return {w:wStat, bp:bStat, adv:adv, total:(w.length+bp.length),
+    range:f(s)+' – '+f(now), name:(S.profile&&S.profile.name)||''};
+}
+function _measCaption(st){
+  var L=[]; L.push('📊 本週量測統計 '+st.range);
+  if(st.name)L.push('👤 '+st.name);
+  L.push('');
+  if(st.w){
+    L.push('⚖️ 體重 '+st.w.last.toFixed(1)+' kg（'+st.w.n+' 次紀錄）');
+    L.push('　平均 '+st.w.avg.toFixed(1)+' kg ‧ 區間 '+st.w.min.toFixed(1)+'–'+st.w.max.toFixed(1)+' kg');
+    if(st.w.delta!=null)L.push('　本週變化 '+(st.w.delta>0?'+':'')+st.w.delta.toFixed(1)+' kg');
+  }
+  if(st.bp){
+    L.push('🩺 血壓平均 '+st.bp.sys+'/'+st.bp.dia+' mmHg（'+st.bp.n+' 次）');
+    if(st.bp.pulse)L.push('　平均脈搏 '+st.bp.pulse+' 次/分');
+  }
+  var i; for(i=0;i<st.adv.length;i++){ var a=st.adv[i];
+    L.push('📐 '+a.title+' '+a.last+' '+a.unit+(a.delta!=null?('（'+(a.delta>0?'+':'')+a.delta+'）'):''));
+  }
+  if(!st.w&&!st.bp&&!st.adv.length)L.push('本週尚無量測紀錄，明天就開始記錄吧！');
+  L.push('');
+  L.push('「親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。」約三1:2');
+  L.push('— CELL CHARGE 愛菲亞細胞快充站');
+  L.push('活化細胞 活出愛 讓愛飛呀！🙏');
+  return L.join('\n');
+}
+function _drawMeasCanvas(st,cb){
+  var W=1080,H=1560;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  var ctx=cv.getContext('2d');
+  var FS="'PingFang TC','Microsoft JhengHei','Heiti TC','Noto Sans TC','sans-serif'";
+  var g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#A01E28'); g.addColorStop(0.55,'#D42E3C'); g.addColorStop(1,'#F26430');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.globalAlpha=0.12; ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(W-110,170,260,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(150,H-160,200,0,Math.PI*2); ctx.fill(); ctx.restore();
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+
+  function card(x,y,w,h){ ctx.fillStyle='rgba(255,255,255,0.96)'; _rr(ctx,x,y,w,h,28); ctx.fill(); }
+
+  function drawAll(logo){
+    var top=70;
+    ctx.fillStyle='#fff'; ctx.font='800 54px '+FS;
+    ctx.fillText('本週量測統計', W/2, top+54);
+    ctx.font='600 30px '+FS; ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.fillText(st.range, W/2, top+108);
+    var cardY=top+150;
+    if(st.name){ ctx.font='600 34px '+FS; ctx.fillStyle='rgba(255,255,255,0.96)';
+      ctx.fillText(st.name, W/2, top+158); cardY=top+196; }
+
+    /* 體重主卡 */
+    var cx=60, cw=W-120, ch=st.w?430:150;
+    card(cx,cardY,cw,ch);
+    if(st.w){
+      ctx.fillStyle='#6B5B55'; ctx.font='700 32px '+FS;
+      ctx.fillText('⚖️ 體重（'+st.w.n+' 次紀錄）', W/2, cardY+64);
+      var numTxt=st.w.last.toFixed(1);
+      ctx.font='800 140px '+FS; var nw=ctx.measureText(numTxt).width;
+      ctx.font='800 58px '+FS;  var uw=ctx.measureText('kg').width;
+      var gap=18, sx=(W-(nw+gap+uw))/2+nw/2, byl=cardY+210;
+      ctx.textAlign='center'; ctx.fillStyle='#A01E28';
+      ctx.font='800 140px '+FS; ctx.fillText(numTxt, sx, byl);
+      ctx.font='800 58px '+FS;  ctx.fillText('kg', sx+nw/2+gap+uw/2, byl);
+      /* 變化 */
+      if(st.w.delta!=null){
+        var dl=st.w.delta, dt=(dl>0?'▲ +':(dl<0?'▼ ':'＝ '))+Math.abs(dl).toFixed(1)+' kg';
+        ctx.fillStyle=(dl>0?'#e53935':(dl<0?'#43a047':'#6B5B55'));
+        ctx.font='800 40px '+FS; ctx.fillText('本週變化 '+dt, W/2, byl+60);
+      }
+      /* 迷你折線圖 */
+      var list=st.w.list.slice(-7), n=list.length;
+      var gx=cx+70, gw=cw-140, gy=cardY+300, gh=95;
+      var mn=st.w.min, mx=st.w.max, rg=(mx-mn)||1;
+      ctx.strokeStyle='#e6ede4'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(gx,gy+gh); ctx.lineTo(gx+gw,gy+gh); ctx.stroke();
+      if(n>=2){
+        ctx.strokeStyle='#D42E3C'; ctx.lineWidth=6; ctx.beginPath();
+        var q; for(q=0;q<n;q++){
+          var px=gx+(gw*q/(n-1)), py=gy+gh-((list[q].kg-mn)/rg)*gh;
+          if(q===0)ctx.moveTo(px,py); else ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+        ctx.fillStyle='#A01E28';
+        for(q=0;q<n;q++){
+          var px2=gx+(gw*q/(n-1)), py2=gy+gh-((list[q].kg-mn)/rg)*gh;
+          ctx.beginPath(); ctx.arc(px2,py2,9,0,Math.PI*2); ctx.fill();
+        }
+      }
+      ctx.fillStyle='#6B5B55'; ctx.font='600 26px '+FS;
+      ctx.fillText('平均 '+st.w.avg.toFixed(1)+' kg ‧ 區間 '+st.w.min.toFixed(1)+'–'+st.w.max.toFixed(1)+' kg', W/2, cardY+ch-28);
+    }else{
+      ctx.fillStyle='#6B5B55'; ctx.font='700 34px '+FS;
+      ctx.fillText('⚖️ 本週尚無體重紀錄', W/2, cardY+92);
+    }
+
+    /* 血壓卡 */
+    var y2=cardY+ch+34, h2=st.bp?250:130;
+    card(cx,y2,cw,h2);
+    if(st.bp){
+      ctx.fillStyle='#6B5B55'; ctx.font='700 32px '+FS;
+      ctx.fillText('🩺 血壓平均（'+st.bp.n+' 次）', W/2, y2+60);
+      ctx.fillStyle='#A01E28'; ctx.font='800 96px '+FS;
+      ctx.fillText(st.bp.sys+'/'+st.bp.dia, W/2, y2+164);
+      ctx.fillStyle='#6B5B55'; ctx.font='600 30px '+FS;
+      ctx.fillText('mmHg'+(st.bp.pulse?('　‧　平均脈搏 '+st.bp.pulse+' 次/分'):''), W/2, y2+214);
+    }else{
+      ctx.fillStyle='#6B5B55'; ctx.font='700 34px '+FS;
+      ctx.fillText('🩺 本週尚無血壓紀錄', W/2, y2+80);
+    }
+
+    /* 進階量測卡 */
+    var y3=y2+h2+34, h3=st.adv.length?190:0;
+    if(st.adv.length){
+      card(cx,y3,cw,h3);
+      ctx.fillStyle='#6B5B55'; ctx.font='700 30px '+FS;
+      ctx.fillText('📐 進階量測', W/2, y3+52);
+      var cols=st.adv.length, colW=cw/cols, r;
+      for(r=0;r<cols;r++){
+        var a=st.adv[r], scx=cx+colW*r+colW/2;
+        ctx.fillStyle='#A01E28'; ctx.font='800 52px '+FS;
+        ctx.fillText(String(a.last), scx, y3+118);
+        ctx.fillStyle='#6B5B55'; ctx.font='600 26px '+FS;
+        ctx.fillText(a.title+'（'+a.unit+'）', scx, y3+156);
+      }
+    }
+
+    /* 經文 */
+    var vy=y3+h3+(st.adv.length?54:20);
+    ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.font='600 32px '+FS;
+    var vend=_wrapC(ctx,'「親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。」', W/2, vy, cw-60, 46);
+    ctx.font='600 28px '+FS; ctx.fillStyle='rgba(255,255,255,0.85)';
+    ctx.fillText('約翰三書 1:2', W/2, vend+46);
+
+    /* 頁尾 */
+    if(logo){ try{
+      var lw=300, lh=lw*(logo.height/logo.width);
+      ctx.drawImage(logo,(W-lw)/2,H-180-lh/2,lw,lh);
+    }catch(e){} }
+    ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.font='800 30px '+FS;
+    ctx.fillText('CELL CHARGE 愛菲亞細胞快充站', W/2, H-92);
+    ctx.font='600 27px '+FS; ctx.fillStyle='rgba(255,255,255,0.85)';
+    ctx.fillText('活化細胞 · 活出愛 · 讓愛飛呀！', W/2, H-46);
+    cb(cv);
+  }
+  var img=new Image();
+  img.onload=function(){ drawAll(img); };
+  img.onerror=function(){ drawAll(null); };
+  try{ img.src=LOGO_WORD; }catch(e){ drawAll(null); }
+}
+function _shareMeasImage(){
+  var st=_measWeekStats();
+  if(!st.w && !st.bp && !st.adv.length){ toast('本週還沒有量測紀錄喔'); return; }
+  toast('美圖產生中…');
+  try{
+    _drawMeasCanvas(st,function(canvas){
+      var url=''; try{ url=canvas.toDataURL('image/png'); }catch(e){ url=''; }
+      var caption=_measCaption(st);
+      _prepShareFile(canvas,function(file){
+        _showImageShare(canvas,url,caption,file,'📊 本週量測統計美圖','愛菲亞本週量測統計.png');
+      },'aifya-measure-week.png');
     });
   }catch(e){ toast('產生失敗，請稍後再試'); }
 }
