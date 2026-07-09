@@ -419,10 +419,13 @@ html[data-theme="dark"] .food.pearl.on .mk,html[data-theme="dark"] .food.pearl .
 .tnlabel .ti{font-size:1.05rem;}
 .tnlabel.body{background:rgba(67,160,71,.13);color:#2e7d32;}
 .tnlabel.soul{background:rgba(245,158,11,.16);color:#b26a00;}
-.tnrow button{flex:1;min-width:0;border:1.5px solid var(--border);background:var(--surface);border-radius:12px;padding:.4rem 1px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--text3);}
+.tnrow button{flex:1;min-width:0;border:1.5px solid var(--border);background:var(--surface);border-radius:12px;padding:.4rem 1px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;color:#4A4744;}
 .tnrow button .ni{font-size:1.2rem;line-height:1.1;}
 .tnrow button .nl{font-size:.68rem;font-weight:700;}
 .tnrow button.on{border-color:var(--brand);color:var(--brand);background:rgba(67,160,71,.1);}
+/* 夜間模式：未選取用亮灰、選取仍用品牌色（順序需在 .on 之後，避免被蓋掉） */
+html[data-theme="dark"] .tnrow button{color:var(--text2);}
+html[data-theme="dark"] .tnrow button.on{color:var(--brand);}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:.5rem;}
 .cal-h{text-align:center;font-size:.72rem;font-weight:800;color:var(--muted);padding:2px 0;}
 .cal-d{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;cursor:pointer;border:1px solid var(--border);transition:transform .12s,box-shadow .2s;padding:2px;}
@@ -1849,13 +1852,13 @@ function renderFasting(){
     endBtn=el('button',''); endBtn.style.cssText='display:block;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;padding:.85rem;margin:.5rem 0 0;font-size:1.1rem;font-weight:800;border:none;border-radius:12px;color:#fff;cursor:pointer';
     var rn0=(Date.now()-f.cur.start)>=f.cur.goalH*3600000;
     endBtn.style.background=rn0?'linear-gradient(135deg,#81C784,#388E3C)':'#546e7a';
-    endBtn.textContent=rn0?'\u2705 完成空腹！':'\u23F9 結束空腹';
+    endBtn.textContent=rn0?'\u2705 完成空腹！開啟細胞第一餐！':'\u23F9 結束空腹';
     ctl.appendChild(endBtn);
     ctl.querySelector('#f-mi').addEventListener('click',function(){
       miOn=!miOn; this.textContent=miOn?'\u2713 開啟':'設定'; this.classList.toggle('on',miOn);
       document.getElementById('f-mibox').classList.toggle('fhidden',!miOn);
       var rn=(Date.now()-f.cur.start)>=f.cur.goalH*3600000;
-      endBtn.textContent=miOn?'\u23F9 回填時間結束':(rn?'\u2705 完成空腹！':'\u23F9 結束空腹');
+      endBtn.textContent=miOn?'\u23F9 回填時間結束':(rn?'\u2705 完成空腹！開啟細胞第一餐！':'\u23F9 結束空腹');
     });
     ctl.querySelector('#f-ri').addEventListener('input',function(){
       var v=this.value, pv=document.getElementById('f-ripreview');
@@ -1922,7 +1925,6 @@ function renderFasting(){
   var c28=el('div','card');
   var c28rows=[
     ['週期','第1週','第2-3週','第4週','第5-12週'],
-    ['分期','淨化期','代謝期','燃脂期','燃脂維持'],
     ['控重','淨化','代謝','燃脂','燃脂維持'],
     ['快樂吃','8-11','8-10 → 8-9','8-8','8-8'],
     ['健康動','533','533','533','533']
@@ -1963,7 +1965,7 @@ function renderFasting(){
   if(active){ fastTick=setInterval(function(){
     if(!S.fast.cur||!document.body.contains(ring)){clearInterval(fastTick);fastTick=null;return;}
     paintRing();
-    if(endBtn&&!miOn){var rn=(Date.now()-S.fast.cur.start)>=S.fast.cur.goalH*3600000; endBtn.style.background=rn?'linear-gradient(135deg,#81C784,#388E3C)':'#546e7a'; endBtn.textContent=rn?'\u2705 完成空腹！':'\u23F9 結束空腹';}
+    if(endBtn&&!miOn){var rn=(Date.now()-S.fast.cur.start)>=S.fast.cur.goalH*3600000; endBtn.style.background=rn?'linear-gradient(135deg,#81C784,#388E3C)':'#546e7a'; endBtn.textContent=rn?'\u2705 完成空腹！開啟細胞第一餐！':'\u23F9 結束空腹';}
   },1000); }
 }
 
@@ -1989,7 +1991,7 @@ function fastAlert(kind,goalH){
   else { title='\u23F8\uFE0F 自動循環已暫停'; short='上一輪已記錄，請手動開始新一輪'; color='#546e7a'; }
   fastChime(kind==='goal'?'goal':'cycle');
   if(navigator.vibrate){ try{ navigator.vibrate(kind==='goal'?[300,150,300,150,300]:[200,100,200]); }catch(e){} }
-  fastNotify(title, kind==='goal'?('已完成 '+goalH+' 小時空腹，可以開始進食了。願神的供應夠你用！'):kind==='cycle'?'上一輪空腹已完成並記錄，已自動開始新一輪。倚靠主，繼續得勝！':'上一輪空腹已記錄。因間隔較久，已暫停自動循環，請手動開始新一輪。');
+  fastNotify(title, kind==='goal'?('恭喜完成 '+goalH+' 小時空腹，準備開啟細胞的第一餐！讓身體不只補營養，更是補能量！讓今日充滿能量！'):kind==='cycle'?'上一輪空腹已完成並記錄，已自動開始新一輪。倚靠主，繼續得勝！':'上一輪空腹已記錄。因間隔較久，已暫停自動循環，請手動開始新一輪。');
   toast(title+'｜'+short, color);
 }
 function fastWatch(){
@@ -2843,6 +2845,70 @@ function _shareMeasImage(){
     });
   }catch(e){ toast('產生失敗，請稍後再試'); }
 }
+/* ===================== 每日充電提醒 ===================== */
+/* 說明：瀏覽器的 Notification 只能在 App「開著或在背景執行」時觸發。
+   iOS 若要在 App 完全關閉時也能收到，必須架設推播伺服器（Web Push）。
+   這裡採「開啟 App 或 App 在背景時檢查」的作法，並每分鐘檢查一次。 */
+function remindCfg(){
+  if(!S.remind) S.remind={on:false, time:'11:00', last:''};
+  if(!S.remind.time) S.remind.time='11:00';
+  return S.remind;
+}
+function remindAskPerm(cb){
+  try{
+    if(!('Notification' in window)){ cb(false,'這個瀏覽器不支援通知功能'); return; }
+    if(Notification.permission==='granted'){ cb(true,''); return; }
+    if(Notification.permission==='denied'){ cb(false,'通知已被封鎖，請到手機設定開啟本網站的通知權限'); return; }
+    Notification.requestPermission().then(function(p){
+      cb(p==='granted', p==='granted'?'':'尚未允許通知');
+    });
+  }catch(e){ cb(false,'無法要求通知權限'); }
+}
+function remindFire(){
+  try{
+    if('Notification' in window && Notification.permission==='granted'){
+      var n=new Notification('⚡ 今日尚未充電', {
+        body:'今日尚未充電，趕緊打開 APP，完成今日充電行動吧！',
+        tag:'cellcharge-remind', renotify:true
+      });
+      setTimeout(function(){ try{ n.close(); }catch(e){} }, 12000);
+    }
+  }catch(e){}
+  try{ if(navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+}
+/* 今日是否已充電：E生愛快充次數 > 0 */
+function remindChargedToday(){
+  var d=today();
+  return (d && (d['cc']||0) > 0);
+}
+function remindCheck(){
+  var r=remindCfg();
+  if(!r.on) return;
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+  var k=todayKey();
+  if(r.last===k) return;              /* 今天已提醒過 */
+  if(remindChargedToday()) return;    /* 已充電，不打擾 */
+  var hm=(r.time||'11:00').split(':');
+  var now=new Date();
+  var due=new Date(now.getFullYear(),now.getMonth(),now.getDate(),
+                   parseInt(hm[0],10)||0, parseInt(hm[1],10)||0, 0, 0);
+  if(now.getTime() < due.getTime()) return;  /* 還沒到時間 */
+  remindFire();
+  r.last=k; save();
+}
+var _remindTimer=null;
+function remindStart(){
+  if(_remindTimer) return;
+  remindCheck();
+  _remindTimer=setInterval(remindCheck, 60000);
+  try{
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden) remindCheck();
+    });
+  }catch(e){}
+}
+try{ remindStart(); }catch(e){}
+
 function renderSet(){
   var view=document.getElementById('view'); view.innerHTML='';
   document.getElementById('secLabel').textContent='⚙️ 設定';
@@ -2943,6 +3009,57 @@ function renderSet(){
   rsg.addEventListener('click',function(){ S.goals={}; save(); renderSet(); toast('已重設為預設目標'); });
   gl.appendChild(rsg);
   view.appendChild(gl);
+
+  // 每日充電提醒
+  var rc=remindCfg();
+  var rm=el('div','card');
+  rm.innerHTML='<h2 class="title" style="margin-top:0">⏰ 每日充電提醒</h2>'+
+    '<div class="lead">設定一個時間（例如上午 11:00）。若當天還沒充電，手機會跳出提醒：'+
+    '「今日尚未充電，趕緊打開 APP，完成今日充電行動吧！」</div>';
+  var rrow=el('div');
+  rrow.style.cssText='display:flex;align-items:center;gap:10px;margin:10px 0';
+  var rlbl=el('div','','提醒時間');
+  rlbl.style.cssText='font-weight:700;color:var(--text2);font-size:.95rem';
+  var rtime=document.createElement('input');
+  rtime.type='time'; rtime.value=rc.time;
+  rtime.style.cssText='flex:1;padding:10px 12px;border-radius:12px;border:1.5px solid var(--border);'
+    +'background:var(--surface);color:var(--text);font-size:1.05rem;font-weight:700';
+  rtime.addEventListener('change',function(){
+    var r=remindCfg(); r.time=rtime.value||'11:00'; r.last=''; save();
+    toast('提醒時間已設為 '+r.time);
+  });
+  rrow.appendChild(rlbl); rrow.appendChild(rtime);
+  rm.appendChild(rrow);
+
+  var rstat=el('div','');
+  rstat.style.cssText='font-size:.88rem;color:var(--text2);margin-top:6px;line-height:1.7';
+  function rPaint(){
+    var r=remindCfg();
+    rbtn.textContent = r.on ? '🔔 提醒已開啟（點此關閉）' : '🔕 開啟每日提醒';
+    rbtn.style.background = r.on
+      ? 'linear-gradient(135deg,#43a047,#2e7d32)'
+      : 'linear-gradient(135deg,#A01E28,#D42E3C)';
+    var perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+    rstat.innerHTML = r.on
+      ? ('✅ 每天 '+r.time+' 若尚未充電就會提醒你。<br>'
+        +'<span style="color:var(--muted)">提醒需要 App 開著或在背景執行才會跳出；完全關閉 App 時無法送出。</span>')
+      : ('<span style="color:var(--muted)">目前未開啟提醒。通知權限：'+perm+'</span>');
+  }
+  var rbtn=el('button','','🔕 開啟每日提醒');
+  rbtn.style.cssText='width:100%;box-sizing:border-box;padding:13px;border-radius:12px;border:none;'
+    +'color:#fff;font-weight:800;font-size:1rem;cursor:pointer';
+  rbtn.addEventListener('click',function(){
+    var r=remindCfg();
+    if(r.on){ r.on=false; save(); rPaint(); toast('已關閉每日提醒'); return; }
+    remindAskPerm(function(ok,why){
+      if(!ok){ rstat.innerHTML='<span style="color:#c62828">'+(why||'無法開啟通知')+'</span>'; return; }
+      r.on=true; r.last=''; save(); remindStart(); rPaint();
+      toast('已開啟！每天 '+r.time+' 提醒充電');
+    });
+  });
+  rm.appendChild(rbtn); rm.appendChild(rstat);
+  rPaint();
+  view.appendChild(rm);
 
   // 備份
   var bk=el('div','card');
