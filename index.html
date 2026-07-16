@@ -628,8 +628,8 @@ var PILLARS=[
    ⚡ E生愛快充 每次完成 +25%（最多計 2 次，共 50%）
    🏃 動一動 / 🌿 腳踏實地 / ☀️ 曬曬陽光 / 🌙 充足睡眠 / 🥗 811快樂吃 各完成達標 +10%（共 50%）
    兩者相加封頂 100%（超過快充視為「滿電獎章」） */
-function _cellPct(){
- var d=today();
+function _cellPctOf(d){
+ if(!d) return 0;
  var cc=Math.min(d['cc']||0,2);   // 最多計 2 次
  var pcc=cc*25;                   // 每充一次 25%，兩次 50%
  var others=['e','g','s','r','n'];// 五個動作各 10%
@@ -643,6 +643,7 @@ function _cellPct(){
  });
  return Math.min(100, pcc + extras);
 }
+function _cellPct(){ return _cellPctOf(today()); }
 var VERSES=[
  ['親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。','約翰三書 1:2'],
  ['你們豈不知道，你們的身子就是聖靈的殿嗎？','哥林多前書 6:19'],
@@ -785,7 +786,7 @@ function renderHome(){
   hero.appendChild(el('div','verse','「'+vs[0]+'」<br>— '+vs[1]));
   view.appendChild(hero);
 
-  view.appendChild(el('h2','title','⚡ 五個開關 — 啟動細胞滿電'));
+  view.appendChild(el('h2','title','⚡ 我的充電行動'));
   PILLARS.forEach(function(p){
     var d2=today();var v=d2[p.k]||0;var pc=pillarPct(p);
     var card=el('div','card');
@@ -863,9 +864,9 @@ function renderHome(){
 
 /* ===================== 心靈SPA模式（四步驟引導，移植自 v16） ===================== */
 var BED=[
- {title:'今晚的感謝',sub:'感謝 3 件神今天為你做的事',icon:'🌟',bg:'linear-gradient(160deg,#1b5e20,#2e7d32)'},
- {title:'今日聖經話語',sub:'讓神的話語進入你的心',icon:'📖',bg:'linear-gradient(160deg,#1565c0,#1976d2)'},
- {title:'睡前禱告',sub:'把今天都交託給神',icon:'🙏',bg:'linear-gradient(160deg,#4a148c,#7b1fa2)'},
+ {title:'今晚的感謝',sub:'感謝 3 件上帝今天為你做的事',icon:'🌟',bg:'linear-gradient(160deg,#1b5e20,#2e7d32)'},
+ {title:'今日聖經話語',sub:'讓上帝的話語進入你的心',icon:'📖',bg:'linear-gradient(160deg,#1565c0,#1976d2)'},
+ {title:'睡前禱告',sub:'把今天都交託給上帝',icon:'🙏',bg:'linear-gradient(160deg,#4a148c,#7b1fa2)'},
  {title:'今日心情',sub:'記錄今天的心情狀態',icon:'😊',bg:'linear-gradient(160deg,#880e4f,#c2185b)'}
 ];
 var _bedStep=0,_bedSecs=0,_bedRunning=false,_bedTimer=null;
@@ -881,7 +882,7 @@ window._bedClose=closeBedtime;
 window._bedNext=function(){
   if(_bedStep===2){ if(!S.bedPray)S.bedPray={}; S.bedPray[todayKey()]=true; save(); }
   if(_bedStep<3){ _bedStep++; _bedRunning=false; if(_bedTimer){clearInterval(_bedTimer);_bedTimer=null;} _bedDraw(); }
-  else { closeBedtime(); toast('🌙 晚安！願神賜您平安的睡眠'); }
+  else { closeBedtime(); toast('🌙 晚安！願上帝賜您平安的睡眠'); }
 };
 window._bedAddThanks=function(){
   var inp=document.getElementById('bed-thx-inp'); if(!inp)return;
@@ -912,11 +913,11 @@ function _bedDraw(){
     var a=(S.bedThanks&&S.bedThanks[k])||[];
     var list=a.length
       ? a.slice(-5).map(function(x){return '<div style="display:flex;gap:8px;padding:8px 12px;background:rgba(255,255,255,0.12);border-radius:10px;margin-bottom:8px"><span style="color:#ffd54f">⭐</span><span style="font-size:.95rem;line-height:1.6">'+esc(x)+'</span></div>';}).join('')
-      : '<div style="padding:10px 12px;background:rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.7);font-size:.9rem;text-align:center;margin-bottom:8px">今天還沒有感恩記錄，寫下神今天的恩典吧 🌱</div>';
+      : '<div style="padding:10px 12px;background:rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.7);font-size:.9rem;text-align:center;margin-bottom:8px">今天還沒有感恩記錄，寫下上帝今天的恩典吧 🌱</div>';
     body='<div style="width:100%;max-width:380px">'+list
       +'<div style="display:flex;gap:8px;margin-top:4px"><input id="bed-thx-inp" placeholder="寫一件今天感謝的事…" style="flex:1;padding:10px 12px;border-radius:10px;border:none;font-size:1rem;outline:none;font-family:inherit"/>'
       +'<button onclick="window._bedAddThanks()" style="padding:0 16px;border-radius:10px;border:none;background:rgba(255,255,255,0.92);color:#1b5e20;font-weight:800;cursor:pointer">加入</button></div>'
-      +'<div style="margin-top:14px;padding:12px 16px;background:rgba(255,255,255,0.1);border-radius:12px;font-size:.92rem;line-height:1.8;color:rgba(255,255,255,0.85)">「凡事謝恩，因為這是神在基督耶穌裡向你們所定的旨意。」— 帖撒羅尼迦前書 5:18</div></div>';
+      +'<div style="margin-top:14px;padding:12px 16px;background:rgba(255,255,255,0.1);border-radius:12px;font-size:.92rem;line-height:1.8;color:rgba(255,255,255,0.85)">「凡事謝恩，因為這是上帝在基督耶穌裡向你們所定的旨意。」— 帖撒羅尼迦前書 5:18</div></div>';
   }else if(_bedStep===1){
     var vs=VERSES[(Math.floor(Date.now()/86400000))%VERSES.length];
     body='<div style="width:100%;max-width:380px"><div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:20px 18px;text-align:center"><div style="font-size:1.12rem;line-height:1.9;font-style:italic;margin-bottom:12px">「'+vs[0]+'」</div><div style="font-size:.92rem;color:rgba(255,255,255,0.7);font-weight:700">— '+vs[1]+'</div></div>'
@@ -933,15 +934,15 @@ function _bedDraw(){
       +'<div style="margin-top:16px;padding:14px 16px;background:rgba(255,255,255,0.12);border-radius:14px;text-align:left;font-size:.9rem;line-height:1.85;color:rgba(255,255,255,0.92)">'
       +'<div style="font-weight:800;margin-bottom:6px">🙏 禱告範例（可照著念）</div>'
       +'「親愛的天父，謝謝祢今天一路的看顧與保守。我把今天所有的憂慮、壓力和軟弱都交給祢，求祢賜給我平安，讓我今晚好好休息，明天有新的力量。也求祢醫治我的身體，讓我的細胞在睡眠中得著修復。奉主耶穌的名禱告，阿們。」</div>'
-      +'<div style="margin-top:14px;font-size:.9rem;color:rgba(255,255,255,0.7);line-height:1.8">「你們要將一切的憂慮卸給神，因為他顧念你們。」— 彼得前書 5:7</div></div>';
+      +'<div style="margin-top:14px;font-size:.9rem;color:rgba(255,255,255,0.7);line-height:1.8">「你們要將一切的憂慮卸給上帝，因為他顧念你們。」— 彼得前書 5:7</div></div>';
   }else{
     var moods=[{v:5,e:'😄',l:'非常好'},{v:4,e:'😊',l:'不錯'},{v:3,e:'😐',l:'普通'},{v:2,e:'😔',l:'有點低'},{v:1,e:'😢',l:'低落'}];
     var cur=(S.bedMood&&S.bedMood[k]);
     var btns=moods.map(function(m){var on=cur===m.v;return '<button onclick="window._bedMood('+m.v+')" style="flex:1;padding:10px 4px;border-radius:12px;background:'+(on?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.1)')+';border:2px solid '+(on?'rgba(255,255,255,0.8)':'rgba(255,255,255,0.2)')+';cursor:pointer;text-align:center"><div style="font-size:24px">'+m.e+'</div><div style="font-size:.78rem;color:rgba(255,255,255,0.85);margin-top:2px">'+m.l+'</div></button>';}).join('');
     body='<div style="width:100%;max-width:380px"><div style="display:flex;gap:8px;margin-bottom:16px">'+btns+'</div>'
-      +'<div style="padding:12px 16px;background:rgba(255,255,255,0.1);border-radius:12px;text-align:center;font-size:.92rem;color:rgba(255,255,255,0.85);line-height:1.8">「他賜給他所親愛的人睡覺。」— 詩篇 127:2<br><span style="font-size:.8rem;color:rgba(255,255,255,0.6)">願神賜您平安的睡眠 🌙</span></div></div>';
+      +'<div style="padding:12px 16px;background:rgba(255,255,255,0.1);border-radius:12px;text-align:center;font-size:.92rem;color:rgba(255,255,255,0.85);line-height:1.8">「他賜給他所親愛的人睡覺。」— 詩篇 127:2<br><span style="font-size:.8rem;color:rgba(255,255,255,0.6)">願上帝賜您平安的睡眠 🌙</span></div></div>';
   }
-  var footer='<button onclick="window._bedNext()" style="width:100%;padding:16px;border-radius:16px;background:rgba(255,255,255,'+(_bedStep<3?'0.2':'0.28')+');border:2px solid rgba(255,255,255,0.5);color:#fff;font-weight:800;font-size:1.1rem;cursor:pointer">'+(_bedStep<3?'✓ 點一下完成，繼續 →':'🌙 晚安，感謝神！')+'</button>';
+  var footer='<button onclick="window._bedNext()" style="width:100%;padding:16px;border-radius:16px;background:rgba(255,255,255,'+(_bedStep<3?'0.2':'0.28')+');border:2px solid rgba(255,255,255,0.5);color:#fff;font-weight:800;font-size:1.1rem;cursor:pointer">'+(_bedStep<3?'✓ 點一下完成，繼續 →':'🌙 晚安，感謝上帝！')+'</button>';
   ov.innerHTML='<div style="height:100%;display:flex;flex-direction:column;overflow:hidden">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;padding:calc(34px + env(safe-area-inset-top)) 20px 10px"><div style="display:flex;gap:8px">'+dots+'</div>'
     +'<button onclick="window._bedClose()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:.9rem">結束</button></div>'
@@ -1828,10 +1829,12 @@ function renderFasting(){
         +'<div style="font-size:31px;font-weight:900;color:'+pc+';line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.5px">'+pad2(elp/3600000)+':'+pad2(elp%3600000/60000)+':'+pad2(elp%60000/1000)+'</div>'
         +'<div style="font-size:15px;color:var(--muted)">/ '+f.cur.goalH+'h 目標</div>'
         +'<div style="font-size:18px;font-weight:800;color:'+pc+'">'+pct.toFixed(1)+'%</div></div></div>';
-      var st=new Date(f.cur.start), eat=new Date(f.cur.start+goalMs), stop=new Date(eat.getTime()+(24-f.cur.goalH)*3600000);
+      var st=new Date(f.cur.start), eat=new Date(f.cur.start+goalMs);
+      /* 第三格改為「空腹時間」＝已經空腹多久（原本的「停止進食」與「空腹開始」同一時間，重複無意義） */
+      var elpH=(elp/3600000);
       boxes='<div class="fboxes">'+fbox('#FFB74D','⏹ 空腹開始',pad2(st.getHours())+':'+pad2(st.getMinutes()))
-        +fbox('#81C784','🥗 開始進食',pad2(eat.getHours())+':'+pad2(eat.getMinutes()))
-        +fbox('#EF9A9A','⏸ 停止進食',pad2(stop.getHours())+':'+pad2(stop.getMinutes()))+'</div>';
+        +fbox('#81C784','🥗 進食時間',pad2(eat.getHours())+':'+pad2(eat.getMinutes()))
+        +fbox(pc,'⏳ 空腹時間',elpH.toFixed(1)+'h')+'</div>';
     }else{
       inner='<div class="ring-wrap" style="width:200px;height:200px"><svg width="200" height="200">'
         +'<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="var(--track)" stroke-width="14"/></svg>'
@@ -1948,12 +1951,11 @@ function renderFasting(){
   c28.innerHTML=c28h;
   view.appendChild(c28);
 
-  /* 紀錄 */
+  /* 紀錄：只顯示日期、空腹時間、達標（依愛菲亞建議移除上方色塊列） */
   if(f.log&&f.log.length){
-    var hl=el('div','card'); var hh='<div class="mlt" style="color:#00897b">\uD83D\uDCCB 空腹紀錄（近 7 次）</div><div class="fbars">';
-    f.log.slice(-14).forEach(function(o){ hh+='<div class="fbar" style="background:'+(o.done?'rgba(129,199,132,0.3)':'rgba(255,183,77,0.15)')+';border-color:'+(o.done?'#81C784':'#FFB74D')+';color:'+(o.done?'#43a047':'#fb8c00')+'">'+(o.done?'\u2713':Math.round(o.hours))+'</div>'; });
-    hh+='</div>'; hl.innerHTML=hh;
-    f.log.slice(-5).reverse().forEach(function(o){
+    var hl=el('div','card');
+    hl.innerHTML='<div class="mlt" style="color:#00897b">\uD83D\uDCCB 空腹紀錄（近 7 次）</div>';
+    f.log.slice(-7).reverse().forEach(function(o){
       var row=el('div','mrec');
       row.innerHTML='<span>'+mdate(o.start)+'</span><b>'+o.hours.toFixed(1)+'h <small style="font-weight:600;color:var(--muted)">/ '+o.goalH+'h</small></b><span style="color:'+(o.done?'#43a047':'var(--muted)')+';font-weight:800;font-size:.85rem">'+(o.done?'\u2713 達標':'')+'</span><button class="mdel">\u2715</button>';
       row.querySelector('.mdel').addEventListener('click',function(){var i=S.fast.log.indexOf(o);if(i>=0)S.fast.log.splice(i,1);save();renderFasting();});
@@ -2025,7 +2027,7 @@ function renderStats(){
   view.appendChild(c1);
   var shb=el('div','card'); shb.style.cssText='background:linear-gradient(135deg,#D42E3C,#A01E28);border:none;margin-top:.6rem';
   shb.innerHTML='<div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px">\uD83D\uDCF8 \u5206\u4eab\u672c\u9031\u6210\u679c</div>'
-    +'<div style="font-size:.9rem;color:rgba(255,255,255,0.92);line-height:1.6;margin-bottom:12px">\u628a\u9019\u9031\u7684\u5145\u96fb\u6210\u679c\u505a\u6210\u7f8e\u5716\uff0c\u4e00\u9375\u5206\u4eab\u5230 LINE\uff0c\u898b\u8b49\u795e\u7684\u6069\u5178\uff01</div>';
+    +'<div style="font-size:.9rem;color:rgba(255,255,255,0.92);line-height:1.6;margin-bottom:12px">\u751f\u6210\u672c\u9031\u5145\u96fb\u6210\u679c\u7d00\u9304\uff0c\u4e00\u9375\u5206\u4eab\u5230 line\uff0c\u898b\u8b49\u4e0a\u5e1d\u7684\u6069\u5178\uff01</div>';
   var shbtn=el('button','','\uD83D\uDDBC\uFE0F \u7522\u751f\u5206\u4eab\u7d00\u9304'); shbtn.style.cssText='width:100%;box-sizing:border-box;padding:13px;border-radius:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.55);color:#fff;font-weight:800;font-size:1.05rem;cursor:pointer';
   shbtn.addEventListener('click',function(){ _shareWeekImage(); });
   shb.appendChild(shbtn); view.appendChild(shb);
@@ -2046,9 +2048,14 @@ function renderStats(){
     totalSun  += o['s']||0;
     totalSleep+= o['r']||0;
   });
+  /* 最近一次空腹：空腹 / (空腹時間) / 完成（依愛菲亞建議新增） */
+  var lastF=fl.length?fl[fl.length-1]:null;
+  var lastFV=lastF?(lastF.hours.toFixed(1)+'h'):'—';
+  var lastFS=lastF?(lastF.done?'完成 ✓':'未達標'):'尚無紀錄';
   grid.innerHTML=stat('🔥','連續充電',streak,'天')
     +stat('⚡','E生愛快充',totalCC,'次')
     +stat('🏃','動一動累計',Math.round(totalMove/60)||totalMove,' '+(totalMove>=60?'小時':'分鐘'))
+    +stat('⏳','空腹',lastFV,lastFS)
     +stat('⏱','空腹達標',fdone,'/ '+fl.length+' 次')
     +stat('⚖️','體重變化',wchg+(mw.length?' kg':''),mw.length?'共 '+mw.length+' 筆':'尚無紀錄')
     +stat('🩺','血壓紀錄',mb.length,'筆');
@@ -2061,9 +2068,9 @@ function renderStats(){
   var yr=el('div','card');
   yr.style.cssText='background:linear-gradient(135deg,#FF6F00,#E65100);border:none;margin-top:1rem';
   yr.innerHTML='<div style="font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px">📊 '+(new Date().getFullYear())+'年度感恩報告</div>'
-    +'<div style="font-size:.9rem;color:rgba(255,255,255,0.9);line-height:1.7;margin-bottom:12px">回顧這一年神在你生命中的奇妙作為，生成專屬的年度成長報告！</div>';
-  var yb=el('button','','📊 生成年度感恩報告'); yb.style.cssText='width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);color:#fff;font-weight:800;font-size:1rem;cursor:pointer';
-  yb.addEventListener('click',function(){ _showShareText('🏆 '+(new Date().getFullYear())+'年度感恩報告', _genYearReport()); });
+    +'<div style="font-size:.9rem;color:rgba(255,255,255,0.9);line-height:1.7;margin-bottom:12px">回顧這一年上帝在你生命中的奇妙作為，生成專屬的年度成長報告！</div>';
+  var yb=el('button','','📊 生成年度感恩報告'); yb.style.cssText='width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);color:#fff;font-weight:800;font-size:1rem;cursor:pointer';
+  yb.addEventListener('click',function(){ _shareYearImage(); });
   yr.appendChild(yb); view.appendChild(yr);
 
   view.appendChild(el('div','verse','「我深信那在你們心裡動了善工的，必成全這工，直到耶穌基督的日子。」（腓立比書 1:6）<br>每一次充電都是神恩典的印記，繼續前行，成為得勝者！'));
@@ -2366,22 +2373,196 @@ function _showShareText(title,text){
   ov.appendChild(box); ov.addEventListener('click',function(e){if(e.target===ov)ov.remove();});
   document.body.appendChild(ov);
 }
-function _genYearReport(){
-  var y=new Date().getFullYear(); var name=(S.profile&&S.profile.name)||'健康使者';
-  var perfect=0, exMin=0, waterDays=0; var wp=null; PILLARS.forEach(function(p){if(p.k==='w')wp=p;});
-  Object.keys(S.days||{}).forEach(function(k){ var o=S.days[k]; if(!o)return; if(dayPct(o)>=100)perfect++; exMin+=(o.e||0); if(wp&&(o.w||0)>=goalOf(wp))waterDays++; });
-  var rainbowDays=0; Object.keys(S.rainbow||{}).forEach(function(k){ if((S.rainbow[k]||[]).length>=5)rainbowDays++; });
+/* ===================== 年度感恩報告（依愛菲亞 0714 建議：圖表＋文字＋一鍵分享） ===================== */
+function _longestStreakBy(fn){
+  var keys=Object.keys(S.days||{}).sort();
+  if(!keys.length) return 0;
+  var best=0, run=0, prev=null, i;
+  for(i=0;i<keys.length;i++){
+    var k=keys[i], o=S.days[k];
+    if(!fn(o)){ run=0; prev=k; continue; }
+    if(prev && _dayDiff(prev,k)===1) run++; else run=1;
+    if(run>best) best=run;
+    prev=k;
+  }
+  return best;
+}
+function _dayDiff(a,b){
+  var pa=a.split('-'), pb=b.split('-');
+  var da=new Date(+pa[0],+pa[1]-1,+pa[2]), db=new Date(+pb[0],+pb[1]-1,+pb[2]);
+  return Math.round((db-da)/86400000);
+}
+function _yearStats(){
+  var y=new Date().getFullYear();
+  var name=(S.profile&&S.profile.name)||'健康使者';
+  var pOf={}; PILLARS.forEach(function(p){ pOf[p.k]=p; });
+  var full=0, exMin=0, exDays=0, gDays=0, sunDays=0, sleepDays=0, waterDays=0;
+  Object.keys(S.days||{}).forEach(function(k){
+    if(k.indexOf(y+'-')!==0) return;          /* 只統計本年度 */
+    var o=S.days[k]; if(!o) return;
+    if(_cellPctOf(o)>=100) full++;
+    exMin += (o.e||0);
+    if((o.e||0) >= goalOf(pOf['e'])) exDays++;
+    if(o.g) gDays++;
+    if((o.s||0) >= goalOf(pOf['s'])) sunDays++;
+    if((o.r||0) >= goalOf(pOf['r'])) sleepDays++;
+    if((o.w||0) >= goalOf(pOf['w'])) waterDays++;
+  });
+  var rainbowDays=0;
+  Object.keys(S.rainbow||{}).forEach(function(k){ if((S.rainbow[k]||[]).length>=5) rainbowDays++; });
   var devoN=Object.keys((S.devo&&S.devo.done)||{}).filter(function(x){return S.devo.done[x];}).length;
   var prayN=Object.keys(S.bedPray||{}).filter(function(x){return S.bedPray[x];}).length;
-  var thanksN=0; Object.keys(S.bedThanks||{}).forEach(function(k){thanksN+=(S.bedThanks[k]||[]).length;});
-  var fdone=((S.fast&&S.fast.log)||[]).filter(function(o){return o.done;}).length;
-  var mN=((S.measure&&S.measure.w)||[]).length+((S.measure&&S.measure.bp)||[]).length;
-  return '📊 '+y+'年度感恩報告\n👤 '+name+'\n\n⚡ 充電成就\n• 全達成天數：'+perfect+' 天\n• 累計運動：'+Math.round(exMin/60)+' 小時\n• 飲水達標：'+waterDays+' 天\n• 七彩飲食達標：'+rainbowDays+' 天\n\n✨ 心靈成長\n• 心靈SPA：'+devoN+' 次\n• 感恩記錄：'+prayN+' 則\n• 感恩記錄：'+thanksN+' 則\n\n📈 累計成果\n• 最長連續充電：'+_streakDays()+' 天\n• 空腹達標：'+fdone+' 次\n• 量測紀錄：'+mN+' 筆\n\n────────────────\n「我深信那在你們心裡動了善工的，必成全這工，直到耶穌基督的日子。」\n— 腓立比書 1:6\n\n🌿 CELL CHARGE 愛菲亞細胞快充站\nAIFYA 愛菲亞\n活化細胞 活出愛 讓愛飛呀！🙏';
+  var thanksN=0; Object.keys(S.bedThanks||{}).forEach(function(k){ thanksN+=(S.bedThanks[k]||[]).length; });
+  var fl=(S.fast&&S.fast.log)||[];
+  var fdoneYear=fl.filter(function(o){ return o.done && new Date(o.start).getFullYear()===y; }).length;
+  var fdoneAll=fl.filter(function(o){ return o.done; }).length;
+  var mw=((S.measure&&S.measure.w)||[]), mb=((S.measure&&S.measure.bp)||[]);
+  var mN=mw.length+mb.length;
+  var wchg=null;
+  if(mw.length>=2){ var dlt=mw[mw.length-1].kg-mw[0].kg; wchg=(dlt>0?'+':'')+dlt.toFixed(1); }
+  var ccStreak=_longestStreakBy(function(o){ return o && (o.cc||0)>0; });
+  var chgStreak=_longestStreakBy(function(o){ return dayPct(o)>0; });
+  return {y:y, name:name, full:full, exMin:exMin, exDays:exDays, gDays:gDays,
+    sunDays:sunDays, sleepDays:sleepDays, waterDays:waterDays, rainbowDays:rainbowDays,
+    devoN:devoN, prayN:prayN, thanksN:thanksN, fdone:fdoneYear, fdoneAll:fdoneAll,
+    mN:mN, wchg:wchg, ccStreak:ccStreak, chgStreak:chgStreak};
 }
+function _yearCaption(st){
+  var L=[];
+  L.push('📊 '+st.y+'年度感恩報告');
+  L.push('👤 '+st.name);
+  L.push('');
+  L.push('⚡ 充電成就');
+  L.push('• 細胞滿電次數：'+st.full+' 天');
+  L.push('• 動一動達成次數：'+st.exDays+' 次（累計 '+Math.round(st.exMin/60)+' 小時）');
+  L.push('• 腳踏實地達成次數：'+st.gDays+' 次');
+  L.push('• 曬曬陽光達成次數：'+st.sunDays+' 次');
+  L.push('• 睡眠時間達成次數：'+st.sleepDays+' 次');
+  L.push('• 飲水達標：'+st.waterDays+' 天');
+  L.push('• 七彩飲食達標：'+st.rainbowDays+' 天');
+  L.push('');
+  L.push('✨ 心靈成長');
+  L.push('• 心靈SPA：'+st.devoN+' 次');
+  L.push('• 禱告記錄：'+st.prayN+' 則');
+  L.push('• 感恩記錄：'+st.thanksN+' 則');
+  L.push('');
+  L.push('📈 累計成果');
+  L.push('• 最長連續充電：'+st.chgStreak+' 天');
+  L.push('• 最長連續快充次數：'+st.ccStreak+' 天');
+  L.push('• 空腹達標：'+st.fdoneAll+' 次');
+  L.push('• 量測紀錄：'+st.mN+' 筆');
+  if(st.wchg!=null) L.push('• 體重變化：'+st.wchg+' kg');
+  L.push('');
+  L.push('────────────────');
+  L.push('回顧這一年上帝在你生命中的奇妙作為，');
+  L.push('每一次充電都是恩典的印記。');
+  L.push('');
+  L.push('— CELL CHARGE 愛菲亞細胞快充站 —');
+  L.push('啟動細胞力，領創AI新紀元');
+  return L.join('\n');
+}
+function _drawYearCanvas(st,cb){
+  var W=1080,H=1560;
+  var cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  var ctx=cv.getContext('2d');
+  var FS="'PingFang TC','Microsoft JhengHei','Heiti TC','Noto Sans TC','sans-serif'";
+  var g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#E65100'); g.addColorStop(0.55,'#F26430'); g.addColorStop(1,'#D42E3C');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.globalAlpha=0.12; ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(W-110,170,260,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(150,H-160,200,0,Math.PI*2); ctx.fill(); ctx.restore();
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+
+  function drawAll(logo){
+    var top=70;
+    if(logo){
+      var lw=250, lh=logo.height*(lw/logo.width);
+      var pillW=lw+56, pillH=lh+32, pillX=(W-pillW)/2;
+      ctx.save(); ctx.shadowColor='rgba(0,0,0,0.16)'; ctx.shadowBlur=18; ctx.shadowOffsetY=6;
+      ctx.fillStyle='#fff'; _rr(ctx,pillX,top,pillW,pillH,24); ctx.fill(); ctx.restore();
+      ctx.drawImage(logo,(W-lw)/2, top+16, lw, lh);
+      top+=pillH+20;
+    } else { top+=30; }
+    ctx.fillStyle='#fff'; ctx.font='800 60px '+FS;
+    ctx.fillText(st.y+'年度感恩報告', W/2, top+56);
+    ctx.font='600 34px '+FS; ctx.fillStyle='rgba(255,255,255,0.94)';
+    ctx.fillText('👤 '+st.name, W/2, top+112);
+
+    /* 圖表：滿電次數、動一動、腳踏實地、曬曬陽光、睡眠、空腹達標次數 */
+    var cardY=top+152, cardX=56, cardW=W-112, cardH=692;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,0.18)'; ctx.shadowBlur=30; ctx.shadowOffsetY=10;
+    ctx.fillStyle='#FFFDFB'; _rr(ctx,cardX,cardY,cardW,cardH,40); ctx.fill(); ctx.restore();
+
+    ctx.fillStyle='#A01E28'; ctx.font='700 36px '+FS;
+    ctx.fillText('本年度達成次數', W/2, cardY+62);
+
+    var items=[['滿電',st.full],['動一動',st.exDays],['腳踏實地',st.gDays],
+               ['曬陽光',st.sunDays],['睡眠',st.sleepDays],['空腹達標',st.fdone]];
+    var mx=1, q;
+    for(q=0;q<items.length;q++){ if(items[q][1]>mx) mx=items[q][1]; }
+    var bx=cardX+56, bw=cardW-112, base=cardY+440, maxH=280, n=items.length, slot=bw/n;
+    var cols=['#D42E3C','#F26430','#388E3C','#F9A825','#5c6bc0','#00897b'];
+    for(q=0;q<n;q++){
+      var v=items[q][1], hh=Math.max(6, maxH*v/mx);
+      var cx=bx+slot*q+slot/2, barW=Math.min(72, slot-18);
+      ctx.fillStyle=cols[q];
+      _rr(ctx, cx-barW/2, base-hh, barW, hh, 12); ctx.fill();
+      ctx.fillStyle='#5a4a44'; ctx.font='800 34px '+FS;
+      ctx.fillText(String(v), cx, base-hh-16);
+      ctx.fillStyle='#8a7a72'; ctx.font='600 24px '+FS;
+      ctx.fillText(items[q][0], cx, base+40);
+    }
+    ctx.strokeStyle='#F0E4DE'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(cardX+44, base+72); ctx.lineTo(cardX+cardW-44, base+72); ctx.stroke();
+
+    var s2=[['連續充電',st.chgStreak,'天'],['連續快充',st.ccStreak,'天'],
+            ['心靈SPA',st.devoN,'次'],['量測紀錄',st.mN,'筆']];
+    var sy=base+136, colW=cardW/4, j;
+    for(j=0;j<4;j++){
+      var scx=cardX+colW*j+colW/2;
+      ctx.fillStyle='#A01E28'; ctx.font='800 46px '+FS;
+      ctx.fillText(String(s2[j][1]), scx, sy);
+      ctx.fillStyle='#5a4a44'; ctx.font='600 26px '+FS;
+      ctx.fillText(s2[j][0], scx, sy+40);
+      ctx.fillStyle='#a89a92'; ctx.font='500 22px '+FS;
+      ctx.fillText(s2[j][2], scx, sy+70);
+    }
+
+    var vy=cardY+cardH+70;
+    ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.font='500 34px '+FS;
+    ctx.fillText('回顧這一年上帝在你生命中的奇妙作為，', W/2, vy);
+    ctx.fillText('每一次充電都是恩典的印記。', W/2, vy+48);
+
+    ctx.fillStyle='#fff'; ctx.font='800 34px '+FS;
+    ctx.fillText('— CELL CHARGE 愛菲亞細胞快充站 —', W/2, H-92);
+    ctx.font='600 30px '+FS; ctx.fillStyle='rgba(255,255,255,0.92)';
+    ctx.fillText('啟動細胞力，領創AI新紀元', W/2, H-46);
+    cb(cv);
+  }
+  var img=new Image();
+  img.onload=function(){ drawAll(img); };
+  img.onerror=function(){ drawAll(null); };
+  try{ img.src=LOGO_WORD; }catch(e){ drawAll(null); }
+}
+function _shareYearImage(){
+  var st=_yearStats();
+  toast('年度報告產生中…');
+  try{
+    _drawYearCanvas(st,function(canvas){
+      var url=''; try{ url=canvas.toDataURL('image/png'); }catch(e){ url=''; }
+      var caption=_yearCaption(st);
+      _prepShareFile(canvas,function(file){
+        _showImageShare(canvas,url,caption,file,'📊 '+st.y+'年度感恩報告','愛菲亞'+st.y+'年度感恩報告.png');
+      },'aifya-year-report.png');
+    });
+  }catch(e){ toast('產生失敗，請稍後再試'); }
+}
+function _genYearReport(){ return _yearCaption(_yearStats()); }
 function _genInvite(){
   var devoN=Object.keys((S.devo&&S.devo.done)||{}).filter(function(x){return S.devo.done[x];}).length;
   var appUrl=(location.origin+location.pathname).replace(/index\.html?$/i,'');
-  return '🌿 主內平安！\n\n我正在使用一個很棒的健康 App — CELL CHARGE 愛菲亞細胞快充站，\n結合愛菲亞細胞快充理念與科學健康管理，每天用五個開關啟動細胞滿電生活！\n\n我已連續打卡 '+_streakDays()+' 天 🔥\n心靈SPA完成 '+devoN+' 次 ✨\n\n完全免費、不需登入，現在就可以試試：\n👉 '+appUrl+'\n\n────────────────\n🌿 CELL CHARGE 愛菲亞細胞快充站\nAIFYA 愛菲亞\n活化細胞 活出愛 讓愛飛呀！🙏';
+  return '🌿 今天有好好愛自己、為自己充充電嗎？\n\n我正在使用一個很棒的健康 App —\nCELL CHARGE 愛菲亞細胞快充站，\n結合愛菲亞細胞快充理念與科學健康管理，\n每天用五個開關啟動細胞滿電生活！\n\n我已連續打卡 '+_streakDays()+' 天 🔥\n心靈SPA完成 '+devoN+' 次 ✨\n\n完全免費、不需登入，現在就可以試試：\n👉 '+appUrl+'\n\n────────────────\n立即加入細胞快充行動\n成為細胞+陪跑教練\n— CELL CHARGE 愛菲亞細胞快充站 —\n啟動細胞力，領創AI新紀元';
 }
 
 /* ===================== 本週成果分享美圖（分享到 LINE） ===================== */
@@ -2407,7 +2588,7 @@ function _weekStats(){
 }
 function _weekCaption(st){
   var L=[];
-  L.push('🌿 本週充電成果 '+st.range);
+  L.push('🌿 本週充電行動成果 '+st.range);
   if(st.name)L.push('👤 '+st.name);
   L.push('');
   L.push('7 日平均達成 '+st.avg+'%');
@@ -2417,9 +2598,12 @@ function _weekCaption(st){
   L.push('⏱ 空腹達標 '+st.fast+' 次');
   if(st.wchg!=null)L.push('⚖️ 體重變化 '+st.wchg+' kg');
   L.push('');
-  L.push('「我深信那在你們心裡動了善工的，必成全這工，直到耶穌基督的日子。」腓1:6');
-  L.push('— CELL CHARGE 愛菲亞細胞快充站');
-  L.push('活化細胞 活出愛 讓愛飛呀！🙏');
+  L.push('每一次充電都在啟動細胞AI。');
+  L.push('持續快充、持續行動，');
+  L.push('讓細胞找回健康節奏。');
+  L.push('');
+  L.push('— CELL CHARGE 愛菲亞細胞快充站 —');
+  L.push('啟動細胞力，領創AI新紀元');
   return L.join('\n');
 }
 function _rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
@@ -2453,8 +2637,8 @@ function _drawWeekCanvas(st,cb){
       ctx.drawImage(logo,(W-lw)/2, top+20, lw, lh);
       top+=pillH+24;
     } else { top+=36; }
-    ctx.fillStyle='#fff'; ctx.font='800 66px '+FS;
-    ctx.fillText('本週充電成果', W/2, top+54);
+    ctx.fillStyle='#fff'; ctx.font='800 60px '+FS;
+    ctx.fillText('本週充電行動成果', W/2, top+54);
     ctx.font='400 34px '+FS; ctx.fillStyle='rgba(255,255,255,0.92)';
     ctx.fillText(st.range, W/2, top+112);
     var cardY=top+150;
@@ -2502,16 +2686,16 @@ function _drawWeekCanvas(st,cb){
       ctx.fillText(stats[j][2], scx, sy+80);
     }
 
-    var vy=cardY+cardH+66;
-    ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.font='italic 400 34px '+FS;
-    var vend=_wrapC(ctx,'「我深信那在你們心裡動了善工的，必成全這工，直到耶穌基督的日子。」', W/2, vy, W-150, 48);
-    ctx.font='500 30px '+FS; ctx.fillStyle='rgba(255,255,255,0.85)';
-    ctx.fillText('腓立比書 1:6', W/2, vend+48);
+    var vy=cardY+cardH+72;
+    ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.font='500 36px '+FS;
+    ctx.fillText('每一次充電都在啟動細胞AI。', W/2, vy);
+    ctx.fillText('持續快充、持續行動，', W/2, vy+50);
+    ctx.fillText('讓細胞找回健康節奏。', W/2, vy+100);
 
     ctx.fillStyle='#fff'; ctx.font='800 36px '+FS;
-    ctx.fillText('CELL CHARGE 愛菲亞細胞快充站', W/2, H-92);
-    ctx.font='500 30px '+FS; ctx.fillStyle='rgba(255,255,255,0.9)';
-    ctx.fillText('活化細胞 · 活出愛 · 讓愛飛呀！', W/2, H-46);
+    ctx.fillText('— CELL CHARGE 愛菲亞細胞快充站 —', W/2, H-92);
+    ctx.font='600 32px '+FS; ctx.fillStyle='rgba(255,255,255,0.92)';
+    ctx.fillText('啟動細胞力，領創AI新紀元', W/2, H-46);
 
     cb(cv);
   }
@@ -3239,10 +3423,10 @@ var VERSES = [
 
 /* ── 禱告交託5步 ── */
 var PRAYER_STEPS = [
-  {ic:'🌟',t:'讚美 Praise',     d:'先讚美神的屬性——祂是全能、全知、全愛的神，不受任何情況限制。'},
-  {ic:'🙏',t:'感謝 Thanksgiving',d:'找出這個困境中仍有的恩典，哪怕只有一件事，感謝神的同在。'},
+  {ic:'🌟',t:'讚美 Praise',     d:'先讚美上帝的屬性——祂是全能、全知、全愛的上帝，不受任何情況限制。'},
+  {ic:'🙏',t:'感謝 Thanksgiving',d:'找出這個困境中仍有的恩典，哪怕只有一件事，感謝上帝的同在。'},
   {ic:'💬',t:'認罪 Confession',  d:'若有因壓力而發的罪（怒氣、怨言、不信），誠實悔改，接受赦免。'},
-  {ic:'📋',t:'代求 Supplication',d:'把具體的需要告訴神，然後把結果放在祂手中，不需要自己扛。'},
+  {ic:'📋',t:'代求 Supplication',d:'把具體的需要告訴上帝，然後把結果放在祂手中，不需要自己扛。'},
   {ic:'✦', t:'交託 Surrender',   d:'宣告：「這不是我的，是祢的！讓耶穌在這裡作王！」無己的操練。'},
 ];
 
@@ -3503,7 +3687,7 @@ function renderStrTab(){
   /* ── 步驟三：紓壓工具箱 ── */
   var tools = [
     {k:'breath', ic:'🌬️', t:'深呼吸',   sub:'4-7-8呼吸法', c:'#4CAF50', bg:'rgba(76,175,80,0.08)'},
-    {k:'prayer', ic:'🙏', t:'交託禱告', sub:'把重擔交給神',  c:'#7B1FA2', bg:'rgba(123,31,162,0.08)'},
+    {k:'prayer', ic:'🙏', t:'交託禱告', sub:'把重擔交給上帝',  c:'#7B1FA2', bg:'rgba(123,31,162,0.08)'},
     {k:'walk',   ic:'🏃', t:'動一動',   sub:'幫大腦充電',    c:'#FF6B35', bg:'rgba(255,107,53,0.08)'},
     {k:'praise', ic:'🎵', t:'音樂紓壓', sub:'讓音樂安定情緒',c:'#FF8F00', bg:'rgba(255,143,0,0.08)'},
   ];
@@ -3529,9 +3713,9 @@ function renderStrTab(){
 
   /* ── 步驟四：記錄並交託 ── */
   if(S.strLevel>0 && S.strSrc.length>0){
-    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#2e7d32;">📝 第四步 · 寫下並交託神</div>';
-    html += '<textarea id="str-note2" rows="3" placeholder="把壓力感受寫下來，然後在禱告中交託給神...&#10;「我靠著那加給我力量的，凡事都能做。」（腓4:13）" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:15px;outline:none;resize:none;font-family:inherit;line-height:1.8;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'#f8fdf8')+';color:'+(window.__isDark()?'#e8f5e9':'inherit')+';box-sizing:border-box;" onchange="window._sn(this.value)">'+S.strNote+'</textarea>';
-    html += '<button onclick="window._saveStr()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#1b5e20,#2e7d32);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">🙏 記錄並交託神</button>';
+    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#2e7d32;">📝 第四步 · 寫下並交託上帝</div>';
+    html += '<textarea id="str-note2" rows="3" placeholder="把壓力感受寫下來，然後在禱告中交託給上帝...&#10;「我靠著那加給我力量的，凡事都能做。」（腓4:13）" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:15px;outline:none;resize:none;font-family:inherit;line-height:1.8;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'#f8fdf8')+';color:'+(window.__isDark()?'#e8f5e9':'inherit')+';box-sizing:border-box;" onchange="window._sn(this.value)">'+S.strNote+'</textarea>';
+    html += '<button onclick="window._saveStr()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#1b5e20,#2e7d32);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">🙏 記錄並交託上帝</button>';
     html += '</div>';
   }
 
@@ -3540,8 +3724,8 @@ function renderStrTab(){
   html += '<div class="emo-sec" style="color:#A01E28;">✦ 細胞快充 · 壓力轉化能量</div>';
   html += '<div style="display:flex;flex-direction:column;gap:8px;">';
   [['🧠','用腦靠自己','→ 焦慮、壓抑、更多煩惱','#EF5350'],
-   ['❤️','用心靠聖靈','→ 把壓力帶到神面前，得平安','#4CAF50'],
-   ['🙏','禱告交託',  '→「將一切憂慮卸給神」','#7B1FA2'],
+   ['❤️','用心靠聖靈','→ 把壓力帶到上帝面前，得平安','#4CAF50'],
+   ['🙏','禱告交託',  '→「將一切憂慮卸給上帝」','#7B1FA2'],
    ['✦', '放下緊繃，讓身心復位','→ 壓力轉化成細胞修復的能量','#FF8F00']].forEach(function(row){
     html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:10px;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'rgba(255,255,255,0.7)')+';">'
       + '<span style="font-size:18px;flex-shrink:0;">'+row[0]+'</span>'
@@ -3580,7 +3764,7 @@ function renderPrayer(){
       +'<div><div style="font-size:15px;font-weight:800;color:#6A1B9A;">'+s.t+'</div>'
       +'<div style="font-size:16px;color:#546e7a;line-height:1.6;">'+s.d+'</div></div></div>';
   });
-  html += '<button onclick="window._or(null)" style="margin-top:10px;width:100%;padding:10px;border-radius:12px;background:linear-gradient(135deg,#7B1FA2,#4A148C);border:none;color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🙏 禱告完成！感謝神聆聽</button>';
+  html += '<button onclick="window._or(null)" style="margin-top:10px;width:100%;padding:10px;border-radius:12px;background:linear-gradient(135deg,#7B1FA2,#4A148C);border:none;color:#fff;font-size:16px;font-weight:900;cursor:pointer;">🙏 禱告完成！感謝上帝聆聽</button>';
   html += '</div>';
   return html;
 }
