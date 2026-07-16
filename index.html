@@ -2559,9 +2559,22 @@ function _shareYearImage(){
   }catch(e){ toast('產生失敗，請稍後再試'); }
 }
 function _genYearReport(){ return _yearCaption(_yearStats()); }
+/* 官方網址（依愛菲亞 0714 建議投影片 8）。
+   若 App 已部署在 https 網站上就用當下網址（方便日後換網域），
+   否則（例如從手機檔案 file:// 直接開啟）一律用官方網址，
+   避免把 file:///... 這種無效路徑分享到 LINE。 */
+var APP_URL='https://spch321-sudo.github.io/aifya-cellcharge/';
+function _appUrl(){
+  try{
+    if(location.protocol==='https:' && location.hostname){
+      return (location.origin+location.pathname).replace(/index\.html?$/i,'');
+    }
+  }catch(e){}
+  return APP_URL;
+}
 function _genInvite(){
   var devoN=Object.keys((S.devo&&S.devo.done)||{}).filter(function(x){return S.devo.done[x];}).length;
-  var appUrl=(location.origin+location.pathname).replace(/index\.html?$/i,'');
+  var appUrl=_appUrl();
   return '🌿 今天有好好愛自己、為自己充充電嗎？\n\n我正在使用一個很棒的健康 App —\nCELL CHARGE 愛菲亞細胞快充站，\n結合愛菲亞細胞快充理念與科學健康管理，\n每天用五個開關啟動細胞滿電生活！\n\n我已連續打卡 '+_streakDays()+' 天 🔥\n心靈SPA完成 '+devoN+' 次 ✨\n\n完全免費、不需登入，現在就可以試試：\n👉 '+appUrl+'\n\n────────────────\n立即加入細胞快充行動\n成為細胞+陪跑教練\n— CELL CHARGE 愛菲亞細胞快充站 —\n啟動細胞力，領創AI新紀元';
 }
 
@@ -3656,7 +3669,7 @@ function renderStrTab(){
     var cur=levels.find(function(l){return l.v===S.strLevel;});
     html += '<div style="text-align:center;font-size:15px;font-weight:800;color:'+cur.c+';">'+cur.e+' '+cur.l+'（'+S.strLevel+'/5）</div>';
     if(S.strLevel>=4){
-      html += '<div style="margin-top:8px;padding:8px 12px;background:rgba(239,83,80,0.07);border-radius:10px;font-size:16px;color:#C62828;line-height:1.7;">⚠️ 壓力偏高！記得：「應當一無掛慮，只要凡事藉著禱告...將你們所要的告訴神。」（腓4:6）</div>';
+      html += '<div style="margin-top:8px;padding:8px 12px;background:rgba(239,83,80,0.07);border-radius:10px;font-size:16px;color:#C62828;line-height:1.7;">⚠️ 壓力偏高！記得：「應當一無掛慮，只要凡事藉著禱告...將你們所要的告訴上帝。」（腓4:6）</div>';
     }
   }
   html += '</div>';
