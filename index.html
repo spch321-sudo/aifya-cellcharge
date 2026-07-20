@@ -682,7 +682,7 @@ var EMO_CATS=[
    {e:'😑',n:'無聊'},{e:'🤔',n:'困惑'},{e:'😐',n:'麻木'},{e:'😤',n:'煩躁'}]},
  {name:'需要轉化的情緒',icon:'🔥',color:'#e57373',list:[
    {e:'😠',n:'憤怒'},{e:'😨',n:'恐懼'},{e:'😢',n:'悲傷'},{e:'😞',n:'羞愧'},
-   {e:'😩',n:'絕望'},{e:'😒',n:'嫉妒'},{e:'😣',n:'罪咎'},{e:'💔',n:'受傷'}]}
+   {e:'😩',n:'絕望'},{e:'😒',n:'嫉妒'},{e:'😣',n:'自責'},{e:'💔',n:'受傷'}]}
 ];
 var CAT_ACTION={
  '正面情緒':'為這份能量感謝上帝，讓細胞的喜樂也感染身邊的人。',
@@ -712,7 +712,7 @@ var EMO_GUIDE={
  '羞愧':['在基督裡你已被接納，不再被定罪。','「如今，那些在基督耶穌裡的就不定罪了。」羅馬書 8:1'],
  '絕望':['再黑的時刻，上帝仍是你的幫助與盼望。','「應當仰望上帝，因他笑臉幫助我，我還要稱讚他。」詩篇 42:11'],
  '嫉妒':['把眼光從比較中挪開，默然倚靠上帝。','「你當默然倚靠耶和華，耐性等候他。」詩篇 37:7'],
- '罪咎':['誠實認罪，上帝必赦免、洗淨你。','「我們若認自己的罪，上帝是信實的，是公義的，必要赦免我們的罪。」約翰一書 1:9'],
+ '自責':['誠實認罪，上帝必赦免、洗淨你。','「我們若認自己的罪，上帝是信實的，是公義的，必要赦免我們的罪。」約翰一書 1:9'],
  '受傷':['你的傷，上帝看見了，他要親自醫治。','「他醫好傷心的人，裹好他們的傷處。」詩篇 147:3']
 };
 
@@ -2882,26 +2882,25 @@ function _measWeekStats(){
     range:f(s)+' – '+f(now), name:(S.profile&&S.profile.name)||''};
 }
 function _measCaption(st){
-  var L=[]; L.push('📊 本週量測統計 '+st.range);
+  var advIcon={bf:'📐',vf:'📐',wc:'📐'};
+  var advOf={}; var i;
+  for(i=0;i<st.adv.length;i++){ advOf[st.adv[i].key]=st.adv[i]; }
+  var L=[];
+  L.push('📊 本週健康量測');
+  L.push('📅 '+st.range);
   if(st.name)L.push('👤 '+st.name);
-  L.push('');
-  if(st.w){
-    L.push('⚖️ 體重 '+st.w.last.toFixed(1)+' kg（'+st.w.n+' 次紀錄）');
-    L.push('　平均 '+st.w.avg.toFixed(1)+' kg ‧ 區間 '+st.w.min.toFixed(1)+'–'+st.w.max.toFixed(1)+' kg');
-    if(st.w.delta!=null)L.push('　本週變化 '+(st.w.delta>0?'+':'')+st.w.delta.toFixed(1)+' kg');
-  }
-  if(st.bp){
-    L.push('🩺 血壓平均 '+st.bp.sys+'/'+st.bp.dia+' mmHg（'+st.bp.n+' 次）');
-    if(st.bp.pulse)L.push('　平均脈搏 '+st.bp.pulse+' 次/分');
-  }
-  var i; for(i=0;i<st.adv.length;i++){ var a=st.adv[i];
-    L.push('📐 '+a.title+' '+a.last+' '+a.unit+(a.delta!=null?('（'+(a.delta>0?'+':'')+a.delta+'）'):''));
-  }
+  if(st.w) L.push('⚖️ 體重 | '+st.w.last.toFixed(1)+' kg');
+  if(st.bp)L.push('🩺 血壓 | '+st.bp.sys+'/'+st.bp.dia+' mmHg');
+  if(advOf.bf)L.push('📐 體脂率 | '+advOf.bf.last+' %');
+  if(advOf.vf)L.push('📐 內臟脂肪 | '+advOf.vf.last+' 級');
+  if(advOf.wc)L.push('📐 腰圍 | '+advOf.wc.last+' cm');
   if(!st.w&&!st.bp&&!st.adv.length)L.push('本週尚無量測紀錄，明天就開始記錄吧！');
   L.push('');
-  L.push('「親愛的兄弟啊，我願你凡事興盛，身體健壯，正如你的靈魂興盛一樣。」約三1:2');
-  L.push('— CELL CHARGE 愛菲亞細胞快充站');
-  L.push('活化細胞 活出愛 讓愛飛呀！🙏');
+  L.push('看見數字、掌握變化，');
+  L.push('持續充電，累積健康好狀態！');
+  L.push('');
+  L.push('— CELL CHARGE 愛菲亞細胞快充站 —');
+  L.push('啟動細胞力，領創AI新紀元');
   return L.join('\n');
 }
 function _drawMeasCanvas(st,cb){
@@ -3384,7 +3383,7 @@ var EMOTIONS = {
     {k:'shame',    e:'😞', l:'羞愧',  c:'#6A1B9A'},
     {k:'despair',  e:'😩', l:'絕望',  c:'#37474F'},
     {k:'jealous',  e:'😒', l:'嫉妒',  c:'#558B2F'},
-    {k:'guilty',   e:'😖', l:'罪咎',  c:'#6D4C41'},
+    {k:'guilty',   e:'😖', l:'自責',  c:'#6D4C41'},
     {k:'hurt',     e:'💔', l:'受傷',  c:'#C62828'},
   ]
 };
