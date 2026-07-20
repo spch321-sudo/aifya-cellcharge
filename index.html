@@ -3401,6 +3401,178 @@ var POS_EXPLORE = {
   awe:       { q:'讓你敬畏的是什麼？',         opts:['上帝創造的奇妙','上帝的全能全知','十字架的愛的深度','神蹟在生命中','末後審判的確實'] },
 };
 
+/* ── 愛菲亞 0714：26 情緒的深入探索＋心靈指引（情緒小鈴鐺）── */
+var EMO_GUIDE = {
+  joy: {
+    exploreQ:'這份喜樂主要來自哪裡？',
+    exploreOpts:['我完成了一件重要的事，覺得自己做得到', '我收到肯定或好消息，覺得自己被看見', '我和喜歡的人相處，覺得彼此很靠近', '我正在享受當下，覺得生活很美好', '沒有特別原因，只是感覺心情很好'],
+    guideQ:'你想如何延續這份喜樂？',
+    guideOpts:['停留幾秒，好好感受這份喜樂', '把這個時刻記錄下來', '和重要的人分享', '用這份能量完成一件事', '安靜享受，不急著做任何事'],
+    bell:'喜樂通常代表某項重要需求得到滿足。刻意停留並注意身體的正向感受，有助於大腦加深這段經驗的記憶。'
+  },
+  peace: {
+    exploreQ:'這份平靜怎麼得到的？',
+    exploreOpts:['有人關心或幫助我，我覺得自己不是孤單的', '我看見一件溫暖的事，覺得生活仍有美好', '我想起珍貴的經驗，覺得值得珍惜', '我發現自己已經擁有很多，覺得很滿足', '我受到支持，覺得自己被理解'],
+    guideQ:'你想如何維持這份平靜？',
+    guideOpts:['安靜坐一下，維持平穩呼吸', '慢慢散步或伸展身體', '暫時減少手機與外界訊息', '專心完成一件簡單的事', '讓自己多休息幾分鐘'],
+    bell:'當大腦判斷環境安全時，自律神經會逐漸由警戒狀態轉向休息與修復，有助於思緒清楚與身體放鬆。'
+  },
+  gratitude: {
+    exploreQ:'這份感謝主要來自什麼？',
+    exploreOpts:['事情暫時告一段落，我覺得可以放鬆了', '我身處熟悉安全的環境，覺得不用警戒', '有可信任的人陪伴，我覺得很安心', '我終於有自己的時間，覺得不需要急', '我接受事情目前的樣子，覺得可以慢下來'],
+    guideQ:'你想如何表達這份感謝？',
+    guideOpts:['傳訊息向對方表達感謝', '親口說一句謝謝', '把這件事記錄下來', '用一個小行動回饋別人', '安靜感受這份溫暖'],
+    bell:'感謝能幫助注意力從不足與壓力，轉向已經擁有的支持與資源，有助於提升心理韌性與人際連結。'
+  },
+  hope: {
+    exploreQ:'這份盼望主要來自哪裡？',
+    exploreOpts:['我看見事情改善的可能，覺得還有機會', '我有一個想完成的目標，覺得值得努力', '我得到新的資訊或機會，覺得可以再試一次', '雖然還不確定，我仍相信會慢慢變好', '我想重新開始，覺得未來可以不同'],
+    guideQ:'現在最適合採取哪個行動？',
+    guideOpts:['設定一個簡單的小目標', '完成第一個可行步驟', '找一位可以支持我的人', '把期待的改變記錄下來', '提醒自己不用一次做到全部'],
+    bell:'盼望並不代表確定成功，而是大腦看見「還有可能」，並願意尋找可行路徑與下一步。'
+  },
+  content: {
+    exploreQ:'此刻的知足主要來自什麼？',
+    exploreOpts:['我的基本需要得到滿足，覺得已經足夠', '我看見目前擁有的人事物，覺得值得珍惜', '我暫時停止比較，覺得自己也很好', '我接受事情目前的狀態，覺得不必強求', '我發現簡單的生活也能帶來滿足'],
+    guideQ:'你想如何保留這份感受？',
+    guideOpts:['記下一件值得珍惜的事', '專心享受眼前的生活', '向重要的人表達關心', '減少不必要的比較', '保留一段安靜的時間'],
+    bell:'知足不是停止進步，而是讓大腦同時看見已經擁有的資源，避免注意力長期停留在不足與比較。'
+  },
+  excited: {
+    exploreQ:'是什麼讓你有興奮地感受？',
+    exploreOpts:['即將參加期待的活動，我很想趕快開始', '出現新的機會，我覺得充滿可能', '我完成目標，覺得自己很有能力', '我接觸到新鮮事物，覺得非常有趣', '我有很多想法，覺得現在就想行動'],
+    guideQ:'現在最適合怎麼做？',
+    guideOpts:['把想法與重點記錄下來', '先確認行動步驟', '和別人分享這份期待', '稍微放慢，避免衝動決定', '把能量集中在一件事情上'],
+    bell:'興奮會提高身體的喚醒程度與行動動機。保留熱情的同時稍微放慢，有助於維持判斷力。'
+  },
+  love: {
+    exploreQ:'這份愛意主要指向誰或什麼？',
+    exploreOpts:['我想靠近重要的人，覺得和他有深厚連結', '我想照顧某個人，覺得他的感受很重要', '我被理解與接納，覺得很安全', '我對自己感到溫柔，覺得值得被照顧', '我對生命、動物或自然感到親近'],
+    guideQ:'你想如何表達？',
+    guideOpts:['說一句關心或肯定的話', '給予陪伴或擁抱', '主動提供實際幫助', '為自己做一件照顧身體的事', '留一點時間陪伴重要的人'],
+    bell:'愛與安全連結能支持大腦的情緒調節，降低孤立感。穩定關係需要透過持續且具體的行動表達。'
+  },
+  awe: {
+    exploreQ:'這份敬畏主要來自什麼？',
+    exploreOpts:['我看見壯麗的自然，覺得世界比自己更廣大', '我感受到生命或科學的奧妙，覺得不可思議', '我被藝術或音樂觸動，覺得非常震撼', '我看見他人的勇氣與成就，覺得深受感動', '我突然對人生有新的理解，覺得視野被打開'],
+    guideQ:'你想如何回應這份感受？',
+    guideOpts:['安靜停留，感受這個時刻', '拍照或記錄', '和別人分享這份感受', '把感動轉化為一個行動', '暫時放下日常煩惱'],
+    bell:'敬畏感能讓注意力暫時離開過度自我關注，擴展到更大的生命經驗，有助於重新整理觀點。'
+  },
+  tired: {
+    exploreQ:'這個疲憊得感受最可能來自什麼？',
+    exploreOpts:['我睡眠不足，覺得身體需要補眠', '我工作或活動太久，覺得能量被消耗', '我承受壓力很久，覺得什麼都不想做', '我一直照顧別人，覺得沒有力氣照顧自己', '我沒有明顯原因，卻持續覺得很累'],
+    guideQ:'現在最需要哪種調整？',
+    guideOpts:['補充水分或食物', '閉眼休息幾分鐘', '起身伸展或短暫散步', '暫停不必要的工作', '安排睡眠或尋求專業評估'],
+    bell:'疲憊會降低專注、判斷與情緒調節能力。若長期休息後仍未改善，也需要留意身體與心理狀態。'
+  },
+  lonely: {
+    exploreQ:'這份孤單比較接近哪種狀況？',
+    exploreOpts:['身邊沒有人陪伴，我覺得很空', '雖然有人在身邊，我仍覺得沒人理解', '我和重要的人疏遠了，覺得失去連結', '我在陌生環境中，覺得沒有歸屬感', '我想找人說話，卻不知道可以找誰'],
+    guideQ:'現在可以做哪個小行動？',
+    guideOpts:['傳訊息給一位熟悉的人', '打電話和人聊幾分鐘', '到有人活動的地方走走', '參加一個有共同興趣的活動', '先陪伴自己，做一件喜歡的事'],
+    bell:'孤單是大腦提醒我們需要人際連結的訊號，不代表自己不受歡迎，也不代表只能獨自承受。'
+  },
+  worry: {
+    exploreQ:'你主要在擔心什麼？',
+    exploreOpts:['我擔心健康或安全，覺得可能會出問題', '我擔心工作或家庭責任，覺得自己可能做不好', '我擔心人際關係，覺得可能被拒絕或誤解', '我反覆想像未來，覺得最壞的情況可能發生', '我沒有足夠資訊，所以一直不放心'],
+    guideQ:'現在最適合做什麼？',
+    guideOpts:['蒐集可靠且足夠的資訊', '寫下目前可以控制的部分', '完成一個最小可行步驟', '暫停反覆搜尋與思考', '找可信任的人一起討論'],
+    bell:'擔憂是大腦預測風險的方式，但預測不等於事實。區分可控制與不可控制，有助於降低心理負荷。'
+  },
+  lost: {
+    exploreQ:'這份迷失的感受可能來自哪裡？',
+    exploreOpts:['我不知道下一步怎麼走，覺得沒有方向', '原本的目標改變了，覺得過去的方法不再適合', '我有太多選擇，覺得每一個都難以決定', '我不知道自己真正想要什麼，覺得很混亂', '我的生活失去重心，覺得每天只是撐過去'],
+    guideQ:'現在最適合做什麼？',
+    guideOpts:['暫停不必要的重大決定', '列出目前最重要的三件事', '選擇一個小方向先嘗試', '找可信任的人一起整理', '先恢復基本生活作息'],
+    bell:'迷失常出現在舊方向不再適用、新方向尚未形成的過渡期。縮小選擇範圍，有助於恢復掌控感。'
+  },
+  bored: {
+    exploreQ:'這個無聊的感受，可能來自什麼？',
+    exploreOpts:['現在做的事情太重複，覺得沒有新鮮感', '活動太簡單，覺得沒有挑戰', '我不知道自己想做什麼，覺得時間很空', '我對很多事情都提不起興趣', '我其實很累，只是不知道該休息還是活動'],
+    guideQ:'現在可以做哪件事？',
+    guideOpts:['換一個活動或環境', '學習一件簡單的新事物', '起身走動或伸展', '聯絡一位朋友', '先休息，確認是不是疲憊'],
+    bell:'無聊可能代表大腦缺少刺激，也可能來自疲憊或缺乏意義感。先判斷需要活動還是休息，再採取行動。'
+  },
+  confused: {
+    exploreQ:'這個困惑的感受主要來自什麼？',
+    exploreOpts:['資訊太多，我覺得腦中很混亂', '不同資訊彼此矛盾，我不知道該相信哪一個', '我沒有理解內容，覺得自己跟不上', '選項太多，我怕做錯決定', '我不知道真正的問題在哪裡'],
+    guideQ:'現在最適合怎麼做？',
+    guideOpts:['把問題拆成幾個小部分', '先確認已知與未知', '暫停接收更多資訊', '找有經驗的人說明', '只處理最重要的一個問題'],
+    bell:'困惑常代表工作記憶負荷過高。減少資訊量、分段處理，有助於大腦重新建立清楚脈絡。'
+  },
+  numb: {
+    exploreQ:'目前的狀態比較接近哪一種？',
+    exploreOpts:['我經歷太多事情，覺得自己好像關掉情緒', '我對原本喜歡的事失去興趣', '我感覺和周圍的人事物有距離', '我腦中一片空白，什麼都不想', '我分不清自己是平靜，還是沒有感覺'],
+    guideQ:'現在可以從哪裡開始？',
+    guideOpts:['注意自己的呼吸與心跳', '感受身體是冷、熱、緊或鬆', '喝水、洗臉或起身走動', '找可信任的人陪伴', '若持續很久，尋求專業協助'],
+    bell:'當壓力超過負荷時，大腦有時會暫時降低情緒感受。先從簡單的身體感覺開始，不必逼自己立刻找到答案。'
+  },
+  restless: {
+    exploreQ:'這個煩躁的感受，最可能來自什麼？',
+    exploreOpts:['事情太多、時間太少，我覺得快來不及', '我一直被打斷，覺得無法專心', '我等了很久，覺得事情不受控制', '我很累或肚子餓，覺得任何事都很惱人', '周圍刺激太多，我覺得快要受不了'],
+    guideQ:'現在最需要哪種調整？',
+    guideOpts:['到安靜的地方停留幾分鐘', '喝水或補充食物', '減少一項不必要的任務', '把事情重新排序', '暫時離開刺激過多的環境'],
+    bell:'煩躁不一定是個性問題，也可能代表大腦刺激過多，或身體的基本需求尚未獲得照顧。'
+  },
+  anger: {
+    exploreQ:'這份憤怒主要來自什麼？',
+    exploreOpts:['我覺得不被尊重，心想對方不應該這樣對我', '我覺得事情不公平，心想自己受到了不合理對待', '我的界線被越過，心想必須保護自己', '我累積太久，心想已經不能再忍了', '事情沒有照預期發展，心想一切都失控了'],
+    guideQ:'現在最適合怎麼做？',
+    guideOpts:['暫時離開現場', '放慢呼吸，讓身體降溫', '透過走動或伸展釋放緊繃', '整理真正想表達的重點', '等情緒降低後再溝通'],
+    bell:'憤怒常在提醒我們，重要需求、價值或界線受到侵犯。情緒可以被理解，但行動仍然可以選擇。'
+  },
+  fear: {
+    exploreQ:'恐懼主要來自什麼？',
+    exploreOpts:['眼前可能有危險，我覺得自己需要立刻保護自己', '我擔心受傷或生病，覺得情況可能會惡化', '我害怕失敗，覺得自己可能無法承受結果', '我害怕被拒絕，覺得自己可能不被接受', '過去的經驗被勾起，我覺得相同的事又會發生'],
+    guideQ:'現在最需要什麼？',
+    guideOpts:['確認周圍是否安全', '離開可能危險的環境', '找可信任的人陪伴', '放慢呼吸並觀察周遭', '尋求專業或緊急協助'],
+    bell:'恐懼會啟動逃跑、抵抗或僵住反應。這是身體的保護機制，應先確認安全，再處理情緒。'
+  },
+  sad: {
+    exploreQ:'這份悲傷最接近哪一種情況？',
+    exploreOpts:['我失去重要的人事物，覺得生活少了一部分', '我的期待落空，覺得努力沒有結果', '我感覺不被理解，覺得沒有人真正懂我', '我想起痛苦經驗，覺得傷口又被碰觸', '我不知道原因，只覺得心裡很沉重'],
+    guideQ:'此刻最需要的是？',
+    guideOpts:['允許自己安靜或流淚', '找一位可信任的人傾聽', '讓身體得到休息', '做一件讓自己感到安全的小事', '若持續影響生活，尋求專業協助'],
+    bell:'悲傷常出現在失去或重要需求未被滿足時。允許情緒存在，是大腦整理與適應經驗的一部分。'
+  },
+  shame: {
+    exploreQ:'這份羞愧的感受，主要來自哪裡？',
+    exploreOpts:['我做了一件後悔的事，覺得自己很糟糕', '我被批評或否定，覺得別人看不起我', '我沒有達到期待，覺得自己不夠好', '我的缺點被看見，覺得很想躲起來', '我反覆想起過去錯誤，覺得自己沒有資格被接受'],
+    guideQ:'現在最需要怎麼做？',
+    guideOpts:['分清楚行為錯誤與自我價值', '修正可以改變的部分', '停止反覆責罵自己', '用對待朋友的方式安慰自己', '找可信任的人談談'],
+    bell:'羞愧容易讓人從「我做錯了」變成「我整個人很糟」。行為可以修正，但一次錯誤不等於全部的自我價值。'
+  },
+  despair: {
+    exploreQ:'這個絕望的感受，主要來自哪裡？',
+    exploreOpts:['我努力很久仍沒有改善，覺得做什麼都沒用', '我看不到任何選擇，覺得未來不會變好', '我失去重要支持，覺得只能一個人承受', '我的身心已經很疲累，覺得自己快撐不下去', '我覺得生活沒有意義，也不想再面對'],
+    guideQ:'現在最需要哪個行動？',
+    guideOpts:['先完成吃飯、喝水與休息', '立即聯絡可信任的人', '不要獨自待著', '尋求心理或醫療專業協助', '若有傷害自己的想法，立即求助緊急資源'],
+    bell:'絕望會讓大腦縮小注意範圍，使人暫時看不見其他可能。此刻先建立安全、陪伴與支持，比解決所有問題更重要。'
+  },
+  jealous: {
+    exploreQ:'忌妒主要在什麼情境出現？',
+    exploreOpts:['別人得到我想要的成果，我覺得自己落後了', '別人受到肯定，我覺得自己不被重視', '我擔心重要的人離開我，覺得自己會被取代', '我一直和別人比較，覺得自己不夠好', '我看見別人的優勢，覺得自己缺少同樣的機會'],
+    guideQ:'現在可以怎麼做？',
+    guideOpts:['暫停反覆比較', '把羨慕轉成具體目標', '看見自己已經擁有的能力', '清楚表達自己的需要', '減少讓自己不舒服的社群刺激'],
+    bell:'忌妒通常來自社會比較，以及對失去、落後或不被重視的擔心。它也能成為辨認內在需求的線索。'
+  },
+  guilty: {
+    exploreQ:'這個自責的感受，主要來自哪裡？',
+    exploreOpts:['我做了違背自己價值的事，覺得應該負責', '我傷害或忽略了別人，覺得自己做錯了', '我沒有完成責任，覺得讓別人失望', '結果不好，我覺得全部都是我的錯', '即使事情無法控制，我仍覺得自己應該做得更好'],
+    guideQ:'現在最適合怎麼做？',
+    guideOpts:['道歉或進行補救', '找出下次可以調整的行為', '分清楚自己真正的責任', '接受已經無法改變的部分', '停止用懲罰自己的方式負責'],
+    bell:'適度自責可以幫助修正行為；過度自責則會消耗心理能量。負責不等於持續懲罰自己。'
+  },
+  hurt: {
+    exploreQ:'讓你感到受傷的可能原因是什麼？',
+    exploreOpts:['我被忽略或冷落，覺得自己不重要', '我被批評或否定，覺得不被接受', '我被誤解，覺得沒有人願意聽我說', '我被背叛，覺得很難再相信對方', '我的需要沒有被看見，覺得很委屈'],
+    guideQ:'現在最需要什麼？',
+    guideOpts:['暫時保持距離，保護自己', '找一位可信任的人傾聽', '先整理自己的感受', '清楚表達需要與界線', '等情緒穩定後再決定是否溝通'],
+    bell:'情緒受傷通常表示關係、安全感或自我價值受到衝擊。先恢復安全感，再決定是否以及如何溝通。'
+  },
+};
+
 /* ── 情緒根源（負面/中性用）── */
 var ROOTS = [
   {k:'relationship', ic:'👥', l:'關係張力'},
@@ -3448,6 +3620,7 @@ var S = {
   tab:'emotion',
   // 情緒
   emo:null, root:null, posOpt:null, emoNote:'',
+  emoExplore:null, emoGuide:null,   /* 愛菲亞0714：第二步深入探索、第三步心靈指引 的選擇 */
   // 轉化步驟（0=未開始，1-5=對應步驟）
   txStep:0,
   txDone:[],   // 已完成的步驟 keys
@@ -3470,6 +3643,7 @@ function findEmo(k){
   return EMOTIONS.pos.concat(EMOTIONS.neu).concat(EMOTIONS.neg).find(function(e){return e.k===k;});
 }
 function isPos(k){return EMOTIONS.pos.some(function(e){return e.k===k;});}
+function isNeg(k){return EMOTIONS.neg.some(function(e){return e.k===k;});}
 function toast(msg,color){
   var t=document.createElement('div');
   t.style.cssText='position:fixed;bottom:130px;left:50%;transform:translateX(-50%);'+
@@ -3546,17 +3720,54 @@ function renderEmoTab(){
   html += '</div>';
   html += '</div>'; /* end card */
 
-  /* ── 第二步：記錄心聲（選好情緒即可進入，不再經過「深入探索」）── */
-  var step3ready = !!S.emo;
-  if(step3ready){
-    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#00796B;">📝 第二步 · 記錄心聲</div>';
+  /* ── 第二步：深入探索（愛菲亞0714：每種情緒 5 個來源選項）── */
+  if(S.emo){
+    var g = EMO_GUIDE[S.emo];
+    if(g){
+      html += '<div class="emo-card2 step-in" style="border-color:'+(curEmo?curEmo.c+'40':'rgba(0,0,0,0.07)')+';">';
+      html += '<div class="emo-sec" style="color:#1976D2;">🔍 第二步 · 深入探索</div>';
+      html += '<div style="font-size:16px;color:#546e7a;margin-bottom:10px;line-height:1.7;"><strong>'+g.exploreQ+'</strong></div>';
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+      g.exploreOpts.forEach(function(opt){
+        var sel=S.emoExplore===opt;
+        html += '<button onclick="window._sEx(this.dataset.v)" data-v="'+opt.replace(/"/g,'&quot;')+'" style="padding:11px 13px;border-radius:12px;text-align:left;font-size:15px;font-weight:600;line-height:1.6;border:1.5px solid '+(sel?(curEmo?curEmo.c:'#1976D2'):'rgba(0,0,0,0.1)')+';background:'+(sel?(curEmo?curEmo.c+'14':'rgba(25,118,210,0.08)'):(window.__isDark()?'rgba(255,255,255,0.04)':'#fff'))+';color:'+(sel?(curEmo?curEmo.c:'#1565C0'):(window.__isDark()?'#e8eaf6':'#37474F'))+';cursor:pointer;display:flex;align-items:flex-start;gap:9px;"><span style="font-size:16px;flex-shrink:0;">'+(sel?'✅':'○')+'</span><span>'+opt+'</span></button>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  /* ── 第三步：心靈指引（愛菲亞0714：5 個行動選項＋情緒小鈴鐺）── */
+  if(S.emo && S.emoExplore){
+    var g2 = EMO_GUIDE[S.emo];
+    if(g2){
+      html += '<div class="emo-card2 step-in">';
+      html += '<div class="emo-sec" style="color:#00796B;">🔔 第三步 · 心靈指引</div>';
+      html += '<div style="font-size:16px;color:#546e7a;margin-bottom:10px;line-height:1.7;"><strong>'+g2.guideQ+'</strong></div>';
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+      g2.guideOpts.forEach(function(opt){
+        var sel=S.emoGuide===opt;
+        html += '<button onclick="window._sGd(this.dataset.v)" data-v="'+opt.replace(/"/g,'&quot;')+'" style="padding:11px 13px;border-radius:12px;text-align:left;font-size:15px;font-weight:600;line-height:1.6;border:1.5px solid '+(sel?'#00897B':'rgba(0,0,0,0.1)')+';background:'+(sel?'rgba(0,137,123,0.1)':(window.__isDark()?'rgba(255,255,255,0.04)':'#fff'))+';color:'+(sel?'#00695C':(window.__isDark()?'#e0f2f1':'#37474F'))+';cursor:pointer;display:flex;align-items:flex-start;gap:9px;"><span style="font-size:16px;flex-shrink:0;">'+(sel?'✅':'○')+'</span><span>'+opt+'</span></button>';
+      });
+      html += '</div>';
+      /* 情緒小鈴鐺 */
+      html += '<div style="margin-top:12px;padding:12px 14px;background:'+(window.__isDark()?'rgba(255,213,79,0.1)':'linear-gradient(135deg,#fff8e1,#fffde7)')+';border-radius:12px;border-left:4px solid #FFB300;">'
+        + '<div style="font-size:14px;font-weight:800;color:#F57F17;margin-bottom:4px;">🔔 情緒小鈴鐺</div>'
+        + '<div style="font-size:15px;color:'+(window.__isDark()?'#ffe082':'#6d5817')+';line-height:1.8;">'+g2.bell+'</div></div>';
+      html += '</div>';
+    }
+  }
+
+  /* ── 第四步：記錄心聲 ── */
+  var step4ready = !!(S.emo && S.emoExplore && S.emoGuide);
+  if(step4ready){
+    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#7B1FA2;">📝 第四步 · 記錄心聲</div>';
     html += '<textarea id="emo-note2" rows="3" placeholder="把此刻感受誠實寫下來...上帝看你的心，比你更了解你。" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:15px;outline:none;resize:none;font-family:inherit;line-height:1.8;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'#f8fdf8')+';color:'+(window.__isDark()?'#e8f5e9':'inherit')+';box-sizing:border-box;" onchange="window._en(this.value)">'+S.emoNote+'</textarea>';
     html += '<button onclick="window._saveEmo()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#7B1FA2,#4A148C);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">✅ 儲存今日情緒記錄</button>';
     html += '</div>';
   }
 
-  /* ── 第三步：情緒轉化逐步引導（選好情緒即可直接進入）── */
-  if(S.emo){
+  /* ── 需要轉化的情緒：加碼「情緒轉化逐步引導」── */
+  if(S.emo && S.emoGuide && isNeg(S.emo)){
     html += renderTxWizard(curEmo);
   }
 
@@ -3898,17 +4109,18 @@ function buildDays14(){
 }
 
 /* ══ Event Handlers ══ */
-window._se = function(k){ S.emo=S.emo===k?null:k; S.root=null; S.posOpt=null; S.txStep=0; S.txDone=[]; render(); };
+window._se = function(k){ S.emo=S.emo===k?null:k; S.root=null; S.posOpt=null; S.emoExplore=null; S.emoGuide=null; S.txStep=0; S.txDone=[]; render(); };
+window._sEx= function(v){ S.emoExplore=S.emoExplore===v?null:v; if(!S.emoExplore){S.emoGuide=null;} render(); };
+window._sGd= function(v){ S.emoGuide=S.emoGuide===v?null:v; render(); };
 window._sr = function(k){ S.root=S.root===k?null:k; render(); };
 window._spo= function(v){ S.posOpt=S.posOpt===v?null:v; render(); };
 window._en = function(v){ S.emoNote=v; };
 window._saveEmo = function(){
   if(!S.emo)return;
   var eo=findEmo(S.emo);
-  var rootObj=ROOTS.find(function(r){return r.k===S.root;});
-  S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',note:S.emoNote});
+  S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:S.emoExplore||'',posOpt:S.emoGuide||'',explore:S.emoExplore||'',guide:S.emoGuide||'',note:S.emoNote});
   sj(SEMO,S.emoLog);
-  S.emo=null;S.root=null;S.posOpt=null;S.emoNote='';S.txStep=0;S.txDone=[];
+  S.emo=null;S.root=null;S.posOpt=null;S.emoExplore=null;S.emoGuide=null;S.emoNote='';S.txStep=0;S.txDone=[];
   toast('✅ 情緒記錄完成！'+(eo?eo.e:'')+' 身心能量已更新，繼續前行！','#7B1FA2');
   render();
 };
@@ -3921,8 +4133,7 @@ window._txDone=function(){
   S.txStep=4; S.txDone=['s1','s2','s3'];
   if(S.emo){
     var eo=findEmo(S.emo);
-    var rootObj=ROOTS.find(function(r){return r.k===S.root;});
-    S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',note:S.emoNote});
+    S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:S.emoExplore||'',posOpt:S.emoGuide||'',explore:S.emoExplore||'',guide:S.emoGuide||'',note:S.emoNote});
     sj(SEMO,S.emoLog);
   }
   toast('💝 情緒轉化完成！把情緒交給上帝，得著平安！','#7B1FA2');
