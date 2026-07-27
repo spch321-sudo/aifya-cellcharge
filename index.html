@@ -732,7 +732,7 @@ function goalOf(p){return (S.goals&&S.goals[p.k]!=null)?S.goals[p.k]:p.goal;}
 function pillarPct(p){var d=homeDay();var v=d[p.k]||0;
   if(p.type==='charge'){return Math.min(1,v/p.goal);}
   if(p.type==='toggle') return v?1:0; return Math.min(v/goalOf(p),1);}
-function overallPct(){return _cellPct();}
+function overallPct(){return dayPct(homeDay());}  /* 與成果頁/週統計/行事曆同一套算法（八項均分、允許部分完成），兩頁數字一致 */
 
 function celebrate(p){
   var ov=document.createElement('div');
@@ -2368,14 +2368,22 @@ function _clearAll(){
   S.bedThanks={};S.bedMood={};S.bedPray={};S.temp={log:{}};S.devo={done:{},notes:{},view:1};S.intakeLog={};
   save(); toast('已清除全部記錄'); renderSet();
 }
+function _openLineText(t){
+  var url='https://line.me/R/msg/text/?'+encodeURIComponent(t);
+  try{ var w=window.open(url,'_blank'); if(!w) location.href=url; }catch(e){ location.href=url; }
+}
 function _showShareText(title,text){
   var ov=document.createElement('div'); ov.id='share-ov';
   ov.style.cssText='position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;padding:18px';
   var box=el('div'); box.style.cssText='background:var(--surface);border-radius:20px;max-width:440px;width:100%;max-height:86vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.45)';
   box.innerHTML='<div style="background:linear-gradient(135deg,#FF6F00,#E65100);padding:15px 18px;color:#fff;font-weight:900;font-size:1.05rem">'+title+'</div>';
   var ta=el('textarea'); ta.value=text; ta.readOnly=true;
-  ta.style.cssText='margin:14px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:.95rem;line-height:1.7;font-family:inherit;resize:none;white-space:pre-wrap;height:300px';
+  ta.style.cssText='margin:14px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:.95rem;line-height:1.7;font-family:inherit;resize:none;white-space:pre-wrap;flex:1;min-height:150px';
   box.appendChild(ta);
+  var lineWrap=el('div'); lineWrap.style.cssText='padding:0 14px 10px';
+  var lineBtn=el('button','','💚 一鍵分享到 LINE'); lineBtn.style.cssText='width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#06C755,#04A64B);color:#fff;font-weight:900;font-size:1.12rem;cursor:pointer;box-shadow:0 4px 14px rgba(6,199,85,0.38)';
+  lineBtn.addEventListener('click',function(){ _openLineText(text); });
+  lineWrap.appendChild(lineBtn); box.appendChild(lineWrap);
   var btns=el('div'); btns.style.cssText='display:flex;gap:10px;padding:0 14px 16px';
   var copy=el('button','','📋 複製'); copy.style.cssText='flex:1;padding:15px;border-radius:12px;border:none;background:linear-gradient(135deg,#D42E3C,#A01E28);color:#fff;font-weight:800;font-size:1.1rem;cursor:pointer';
   copy.addEventListener('click',function(){
