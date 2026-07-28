@@ -3173,7 +3173,7 @@ var PRAYER_STEPS = [
 var S = {
   tab:'emotion',
   // 情緒
-  emo:null, root:null, posOpt:null, emoNote:'',
+  emo:null, root:null, posOpt:null, guideOpt:null, emoNote:'',
   // 轉化步驟（0=未開始，1-5=對應步驟）
   txStep:0,
   txDone:[],   // 已完成的步驟 keys
@@ -3287,12 +3287,20 @@ var __d=_emoDocx(curEmo?curEmo.l:'')||{q2:'這個感受最可能來自哪裡？'
     html += '</div>';
   }
 
-  /* ── 步驟三：記錄心聲 ── */
+  /* ── 步驟三：心靈指引 ── */
   var step3ready = S.emo && S.posOpt;
   if(step3ready){
-    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#00796B;">📝 第三步 · 記錄心聲</div>';
-    html += '<textarea id="emo-note2" rows="3" placeholder="把此刻感受誠實寫下來...上帝看你的心，比你更了解你。" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);font-size:15px;outline:none;resize:none;font-family:inherit;line-height:1.8;background:'+(window.__isDark()?'rgba(255,255,255,0.06)':'#f8fdf8')+';color:'+(window.__isDark()?'#e8f5e9':'inherit')+';box-sizing:border-box;" onchange="window._en(this.value)">'+S.emoNote+'</textarea>';
-    html += '<button onclick="window._saveEmo()" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#7B1FA2,#4A148C);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">✅ 儲存今日情緒記錄</button>';
+    var __g=_emoDocx(curEmo?curEmo.l:'')||{q3:'你想如何回應這份情緒？',a3:['安靜片刻','好好休息'],tip:''};
+    var __gc=curEmo?curEmo.c:'#00796B';
+    html += '<div class="emo-card2 step-in"><div class="emo-sec" style="color:#00796B;">💡 第三步 · 心靈指引</div>';
+    html += '<div style="font-size:16px;color:#546e7a;margin-bottom:12px;line-height:1.7;"><strong>'+__g.q3+'</strong></div>';
+    html += '<div style="display:flex;flex-direction:column;gap:9px;">';
+    __g.a3.forEach(function(opt){ var gsel=S.guideOpt===opt;
+      html += '<button onclick="window._sgo(this.dataset.sgopt)" data-sgopt="'+opt.replace(/"/g,"&quot;")+'" style="padding:12px 14px;border-radius:12px;text-align:left;font-size:15px;line-height:1.6;font-weight:'+(gsel?'800':'600')+';border:1.5px solid '+(gsel?__gc:'rgba(0,0,0,0.08)')+';background:'+(gsel?__gc+'18':'#fff')+';color:'+(gsel?__gc:'#37474F')+';cursor:pointer;display:flex;align-items:flex-start;gap:9px;"><span style="font-size:16px;color:'+__gc+';">'+(gsel?'●':'○')+'</span><span>'+opt+'</span></button>';
+    });
+    html += '</div>';
+    if(__g.tip){ html += '<div style="margin-top:12px;padding:12px 14px;border-left:4px solid '+__gc+';background:'+__gc+'12;border-radius:10px;"><div style="font-weight:900;color:'+__gc+';margin-bottom:5px;font-size:15px;">🔔 情緒小鈴鄴</div><div style="color:#37474F;line-height:1.75;font-size:14.5px;">'+__g.tip+'</div></div>'; }
+    if(S.guideOpt){ html += '<button onclick="window._saveEmo()" style="margin-top:12px;width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,#00897B,#00695C);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;">✓ 完成，記錄今天的心情</button>'; }
     html += '</div>';
   }
 
@@ -3642,14 +3650,15 @@ function buildDays14(){
 window._se = function(k){ S.emo=S.emo===k?null:k; S.root=null; S.posOpt=null; S.txStep=0; S.txDone=[]; render(); };
 window._sr = function(k){ S.root=S.root===k?null:k; render(); };
 window._spo= function(v){ S.posOpt=S.posOpt===v?null:v; render(); };
+window._sgo= function(v){ S.guideOpt=S.guideOpt===v?null:v; render(); };
 window._en = function(v){ S.emoNote=v; };
 window._saveEmo = function(){
   if(!S.emo)return;
   var eo=findEmo(S.emo);
   var rootObj=ROOTS.find(function(r){return r.k===S.root;});
-  S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',note:S.emoNote});
+  S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',guideOpt:S.guideOpt||'',note:S.emoNote});
   sj(SEMO,S.emoLog);
-  S.emo=null;S.root=null;S.posOpt=null;S.emoNote='';S.txStep=0;S.txDone=[];
+  S.emo=null;S.root=null;S.posOpt=null;S.guideOpt=null;S.emoNote='';S.txStep=0;S.txDone=[];
   toast('✅ 情緒記錄完成！'+(eo?eo.e:'')+' 身心能量已更新，繼續前行！','#7B1FA2');
   render();
 };
@@ -3663,7 +3672,7 @@ window._txDone=function(){
   if(S.emo){
     var eo=findEmo(S.emo);
     var rootObj=ROOTS.find(function(r){return r.k===S.root;});
-    S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',note:S.emoNote});
+    S.emoLog.push({date:today(),time:new Date().toTimeString().slice(0,5),emoKey:S.emo,emoLabel:eo?eo.l:'',root:rootObj?rootObj.l:'',posOpt:S.posOpt||'',guideOpt:S.guideOpt||'',note:S.emoNote});
     sj(SEMO,S.emoLog);
   }
   toast('💝 情緒轉化完成！把情緒交給上帝，得著平安！','#7B1FA2');
