@@ -1,6 +1,6 @@
 // 愛菲亞細胞快充站 Service Worker
 // 版本號更新即可強制刷新快取
-var CACHE_NAME = 'aifya-cell-v3';
+var CACHE_NAME = 'aifya-cell-v4';
 var ASSETS = [
   './',
   './index.html',
