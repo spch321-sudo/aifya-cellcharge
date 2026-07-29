@@ -700,7 +700,12 @@ function goalOf(p){return (S.goals&&S.goals[p.k]!=null)?S.goals[p.k]:p.goal;}
 function pillarPct(p){var d=(p.k==='r'?sleepDay():homeDay());var v=d[p.k]||0;
   if(p.type==='charge'){return Math.min(1,v/p.goal);}
   if(p.type==='toggle') return v?1:0; return Math.min(v/goalOf(p),1);}
-function overallPct(){return dayPct(homeDay());}  /* 與成果頁/週統計/行事曆同一套算法（八項均分、允許部分完成），兩頁數字一致 */
+function overallPct(){
+  var base=homeDay(); var merged={}; for(var k in base) merged[k]=base[k];
+  /* 睡眠跨夜：不論記昨天或今晚，都以實際睡眠記錄計入今日能量環（最多10%） */
+  merged['r']=Math.max(base['r']||0, sleepDay()['r']||0);
+  return dayPct(merged);
+}
 
 function celebrate(p){
   var ov=document.createElement('div');
