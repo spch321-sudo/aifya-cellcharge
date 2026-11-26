@@ -617,7 +617,7 @@ function todayKey(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()
 function weekKey(){var d=new Date();var oj=new Date(d.getFullYear(),0,1);
   var w=Math.ceil((((d-oj)/86400000)+oj.getDay()+1)/7);return d.getFullYear()+'-W'+w;}
 function today(){ var k=todayKey(); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
-var APP_BUILD='1126-5';
+var APP_BUILD='1126-6';
 var _recOff=0, _slpOff=0;
 function _offKey(off){var d=new Date();d.setDate(d.getDate()-off);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function recDay(off){ var k=_offKey(off); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
@@ -2245,7 +2245,7 @@ function fastWatch(){
 
 /* ===================== 統計頁 ===================== */
 function dayKeyOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
-function dayPct(o){if(!o)return 0;var s=0;PILLARS.forEach(function(p){var v=o[p.k]||0;var r=p.type==='toggle'?(v?1:0):(p.type==='charge'?Math.min(v/p.goal,1):Math.min(v/goalOf(p),1));s+=r;});return Math.round(s/PILLARS.length*100);}
+function dayPct(o){ return o?_cellPctOf(o):0; } /* 與首頁能量圈同一套算法，確保成果頁、日曆、分享圖分數一致 */
 function renderStats(){
   var view=document.getElementById('view'); view.innerHTML='';
   document.getElementById('secLabel').textContent='📈 快充成果 RESULTS';
