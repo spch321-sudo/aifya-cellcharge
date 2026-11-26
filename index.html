@@ -617,7 +617,7 @@ function todayKey(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()
 function weekKey(){var d=new Date();var oj=new Date(d.getFullYear(),0,1);
   var w=Math.ceil((((d-oj)/86400000)+oj.getDay()+1)/7);return d.getFullYear()+'-W'+w;}
 function today(){ var k=todayKey(); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
-var APP_BUILD='1126-3';
+var APP_BUILD='1126-4';
 var _recOff=0, _slpOff=0;
 function _offKey(off){var d=new Date();d.setDate(d.getDate()-off);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function recDay(off){ var k=_offKey(off); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
@@ -3637,6 +3637,33 @@ document.querySelectorAll('.tnrow button').forEach(function(b){
 applySettings();
 go('home');
 try{ fastWatch(); setInterval(fastWatch,1000); document.addEventListener('visibilitychange',function(){ if(!document.hidden) fastWatch(); }); }catch(e){}
+
+/* 自動更新：開啟或回到 App 時，檢查網站上是否有新版，有就自動更新（資料不會消失） */
+(function(){
+  var busy=false;
+  function checkUpdate(){
+    if(busy||!window.fetch||location.protocol.indexOf('http')!==0) return; busy=true;
+    var u=location.href.split('#')[0].split('?')[0]+'?_v='+Date.now();
+    fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){
+      var m=/var APP_BUILD='([^']+)'/.exec(t||''); busy=false;
+      if(!m||m[1]===APP_BUILD) return;
+      var tried=''; try{tried=sessionStorage.getItem('ns_upd_try')||'';}catch(e){}
+      if(tried===m[1]) return; /* 同一個新版只自動重試一次，避免一直重新整理 */
+      try{sessionStorage.setItem('ns_upd_try',m[1]);}catch(e){}
+      try{ toast('發現新版本，正在更新… 您的紀錄不會消失'); }catch(e){}
+      var go=function(){ setTimeout(function(){ location.reload(); },1200); };
+      try{
+        var ps=[];
+        if(window.caches&&caches.keys) ps.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+        if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations) ps.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.update();}));}));
+        Promise.all(ps).then(go,go);
+      }catch(e){ go(); }
+    }).catch(function(){ busy=false; });
+  }
+  setTimeout(checkUpdate,2500);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) checkUpdate(); });
+  window._checkUpdate=checkUpdate;
+})();
 
 /* 離線快取 */
 if('serviceWorker' in navigator){
