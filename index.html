@@ -617,7 +617,7 @@ function todayKey(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()
 function weekKey(){var d=new Date();var oj=new Date(d.getFullYear(),0,1);
   var w=Math.ceil((((d-oj)/86400000)+oj.getDay()+1)/7);return d.getFullYear()+'-W'+w;}
 function today(){ var k=todayKey(); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
-var APP_BUILD='1126-6';
+var APP_BUILD='1126-7';
 var _recOff=0, _slpOff=0;
 function _offKey(off){var d=new Date();d.setDate(d.getDate()-off);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function recDay(off){ var k=_offKey(off); if(!S.days[k]) S.days[k]={}; return S.days[k]; }
@@ -785,12 +785,6 @@ function renderHome(){
   var d=new Date();d.setDate(d.getDate()-_recOff);var wd=['日','一','二','三','四','五','六'][d.getDay()];
   var pct=_cellPctOf(recDay(_recOff));
   var R=70, C=2*Math.PI*R, off=C*(1-pct/100);
-  var rs=el('div','card'); rs.style.cssText='padding:12px 14px';
-  function _chip(label,on,fn){return '<button onclick="'+fn+'" style="flex:1;padding:12px 6px;border-radius:14px;font-size:1.05rem;font-weight:800;cursor:pointer;border:2px solid '+(on?'var(--brand)':'var(--border)')+';background:'+(on?'var(--brand)':'var(--surface2)')+';color:'+(on?'#fff':'var(--text2)')+'">'+label+'</button>';}
-  rs.innerHTML='<div style="font-weight:800;font-size:1rem;color:var(--brand-d);margin-bottom:8px">📅 記錄日期<span translate="no" style="float:right;font-size:.72rem;font-weight:600;color:var(--text2)">v'+APP_BUILD+'</span></div>'
-    +'<div style="display:flex;gap:10px">'+_chip('今天',_recOff===0,'window._setRecOff(0)')+_chip('昨天（補記）',_recOff===1,'window._setRecOff(1)')+'</div>'
-    +(_recOff?'<div style="font-size:.85rem;color:var(--text2);line-height:1.6;margin-top:8px">目前是補記昨天，下面的記錄都會算進昨天。</div>':'');
-  view.appendChild(rs);
   var hero=el('div','card hero');
   hero.innerHTML=
     '<div class="hero-logo"><img src="'+LOGO_FULL+'" alt="AIFYA 細胞快充"></div>'+
@@ -800,7 +794,7 @@ function renderHome(){
       '<circle cx="86" cy="86" r="'+R+'" fill="none" stroke="var(--brand)" stroke-width="9" stroke-linecap="round" '+
       'stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"/></svg>'+
       '<div class="mid"><div class="pct">'+pct+'%</div>'+
-      '<div class="pl">'+(_recOff?'昨日細胞能量':'今日細胞能量')+'</div><div style="font-size:.85rem;font-weight:800;color:var(--brand-d)">'+pct+' / 100 分</div>'+
+      '<div class="pl">'+(_recOff?'昨日細胞能量':'今日細胞能量')+'</div>'+
       '<svg width="46" height="46" viewBox="0 0 24 24" style="margin-top:-6px" aria-hidden="true">'+
         '<path d="M14 2 L5 13 L10 13 L9 21 L18 9 L13 9 Z" fill="#43a047"/>'+
       '</svg>'+
@@ -813,6 +807,12 @@ function renderHome(){
 
 
   view.appendChild(el('h2','title',_recOff?'⚡ 補記昨天的充電行動':'⚡ 我的充電行動'));
+  var rs=el('div','card'); rs.style.cssText='padding:12px 14px';
+  function _chip(label,on,fn){return '<button onclick="'+fn+'" style="flex:1;padding:12px 6px;border-radius:14px;font-size:1.05rem;font-weight:800;cursor:pointer;border:2px solid '+(on?'var(--brand)':'var(--border)')+';background:'+(on?'var(--brand)':'var(--surface2)')+';color:'+(on?'#fff':'var(--text2)')+'">'+label+'</button>';}
+  rs.innerHTML='<div style="font-weight:800;font-size:1rem;color:var(--brand-d);margin-bottom:8px">📅 記錄日期<span translate="no" style="float:right;font-size:.72rem;font-weight:600;color:var(--text2)">v'+APP_BUILD+'</span></div>'
+    +'<div style="display:flex;gap:10px">'+_chip('今天',_recOff===0,'window._setRecOff(0)')+_chip('昨天（補記）',_recOff===1,'window._setRecOff(1)')+'</div>'
+    +(_recOff?'<div style="font-size:.85rem;color:var(--text2);line-height:1.6;margin-top:8px">目前是補記昨天，下面的記錄都會算進昨天。</div>':'');
+  view.appendChild(rs);
   PILLARS.forEach(function(p){
     var d2=recDay(_offOf(p));var v=d2[p.k]||0;var pc=(p.type==='charge')?Math.min(1,v/p.goal):(p.type==='toggle'?(v?1:0):Math.min(v/goalOf(p),1));
     var card=el('div','card');
